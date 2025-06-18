@@ -1,3 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtualenv
+venv/
+env/
+ENV/
+*.env
+*.venv
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+
+# IDEs e editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux/Mac
+.DS_Store
+.Trash-*
+.nfs*
+
+# Arquivos de migração desnecessários (caso queira ignorar)
+# Se quiser versionar migrações, NÃO use essa linha
+# */migrations/*.py[cod]
+
+# Arquivos de configuração que serão diferentes por ambiente
+.env
+*.env.*
+*.local
+
+# Pytest / Coverage
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+.cache/
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

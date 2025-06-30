@@ -1,0 +1,17 @@
+<!-- templates/relatorio_geral.html -->
+{% extends "base.html" %}
+{% block title %}Relatório Geral - LTG Consultoria{% endblock %}
+{% block content %}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Relatório Geral</h2>
+            <p><strong>Período:</strong> {{ data_inicio }} até {{ data_fim }}</p>
+            <p>Conteúdo do relatório geral vai aqui.</p>
+            <a href="{% url 'pre_relatorio' %}" class="btn btn-secondary">Voltar</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

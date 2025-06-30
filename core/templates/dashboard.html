@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - LTG Consultoria{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Dashboard de Notas Fiscais</h2>
+    <a href="#" class="btn btn-primary">Gerar Relatório</a>
+</div>
+
+<!-- Cards Resumo -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Notas Lançadas</h5>
+                <p class="card-text display-6">1.230</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5 class="card-title">Notas Pendentes</h5>
+                <p class="card-text display-6">47</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">Taxa de Sucesso</h5>
+                <p class="card-text display-6">96%</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráfico Mensal -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <canvas id="graficoMensal" width="400" height="100"></canvas>
+    </div>
+</div>
+
+<!-- Tabela de Notas Pendentes -->
+<div class="row">
+    <div class="col-md-12">
+        <h4>Notas Não Lançadas</h4>
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Data</th>
+                    <th>Número</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2024-09-15</td>
+                    <td>00123456789</td>
+                    <td class="text-danger">Erro na leitura</td>
+                    <td><a href="#" class="btn btn-sm btn-warning">Ver Detalhes</a></td>
+                </tr>
+                <tr>
+                    <td>2024-09-16</td>
+                    <td>00123456790</td>
+                    <td class="text-danger">Chave inválida</td>
+                    <td><a href="#" class="btn btn-sm btn-warning">Ver Detalhes</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Script do Gráfico -->
+<script>
+    const ctx = document.getElementById('graficoMensal').getContext('2d');
+    const graficoMensal = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago'],
+            datasets: [{
+                label: 'Notas Processadas',
+                data: [120, 150, 140, 130, 180, 200, 190, 160],
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                tension: 0.3,
+                fill: true
+            }, {
+                label: 'Erros',
+                data: [10, 15, 12, 20, 8, 14, 18, 25],
+                borderColor: '#dc3545',
+                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Relatórios - LTG Consultoria{% endblock %}
+{% block content %}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Título -->
+        <div class="col-12 mb-4">
+            <h2 class="fw-bold text-dark">Solicitação de Relatórios</h2>
+            <hr class="text-muted">
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="col-md-8 col-lg-7 mb-4">
+            <form method="post">
+                {% csrf_token %}
+                <!-- Tipo de Relatório -->
+                <div class="mb-3">
+                    <label for="tipo_relatorio" class="form-label fw-bold">Tipo de Relatório</label>
+                    <select id="tipo_relatorio" name="tipo_relatorio" class="form-select" required>
+                        <option value="">Selecione...</option>
+                        <option value="geral">Relatório Geral</option>
+                        <option value="pendentes">Notas Pendentes</option>
+                        <option value="por_empresa">Notas por Empresa</option>
+                        <option value="estatisticas">Estatísticas Mensais</option>
+                        <option value="erros">Histórico de Erros</option>
+                        <option value="por_usuario">Notas por Usuário</option>
+                    </select>
+                    <small class="text-muted mt-1">Escolha o tipo de relatório que deseja gerar.</small>
+                </div>
+
+                <!-- Datas -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label for="data_inicio" class="form-label fw-bold">Data Inicial</label>
+                        <input type="date" id="data_inicio" name="data_inicio" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="data_fim" class="form-label fw-bold">Data Final</label>
+                        <input type="date" id="data_fim" name="data_fim" class="form-control" required>
+                    </div>
+                </div>
+
+                <!-- Descrição Dinâmica -->
+                <div class="mb-4">
+                    <h5>Descrição do Relatório Selecionado</h5>
+                    <p id="descricao-completa" class="text-muted fst-italic bg-light p-3 rounded border">
+                        Selecione um tipo de relatório para visualizar a descrição completa.
+                    </p>
+                </div>
+
+                <!-- Botão -->
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-file-pdf me-2"></i>Gerar Relatório
+                </button>
+            </form>
+        </div>
+
+        <!-- Painel de Informações (opcional) -->
+        <div class="col-md-4 col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">Precisa de ajuda?</h5>
+                    <p class="card-text text-muted">
+                        Escolha o tipo de relatório, defina o período desejado e clique em "Gerar Relatório".
+                        Você pode usar esse documento para acompanhar notas fiscais ou compartilhar dados com sua equipe.
+                    </p>
+                    <ul class="list-group list-group-flush mt-3">
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <small>Todos os campos são obrigatórios.</small>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-info-circle text-primary me-2"></i>
+                            <small>Dados filtrados conforme período selecionado.</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para descrição dinâmica -->
+<script>
+    const select = document.getElementById('tipo_relatorio');
+    const descricao = document.getElementById('descricao-completa');
+
+    const descricoes = {
+        '': 'Selecione um tipo de relatório para visualizar a descrição completa.',
+        'geral': 'Mostra todas as notas processadas no período informado.',
+        'pendentes': 'Exibe somente as notas que não foram lançadas ou tiveram erro.',
+        'por_empresa': 'Lista todas as notas emitidas por uma empresa específica.',
+        'estatisticas': 'Gráficos e dados estatísticos sobre sucesso e falhas por mês.',
+        'erros': 'Detalha todos os erros ocorridos durante o processamento.',
+        'por_usuario': 'Mostra quantas notas foram lançadas por cada usuário do sistema.'
+    };
+
+    select.addEventListener('change', function () {
+        const selected = this.value;
+        descricao.textContent = descricoes[selected] || descricoes[''];
+    });
+</script>
+
+{% endblock %}

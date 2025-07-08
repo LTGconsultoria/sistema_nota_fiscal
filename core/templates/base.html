@@ -49,33 +49,39 @@
         <nav class="col-md-2 d-none d-md-block sidebar p-3">
             <h5>LTG Consultoria</h5>
             <hr>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'dashboard' %}">
-                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-file-invoice me-2"></i>Notas Pendentes
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-chart-line me-2"></i>Estatísticas
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'pre_relatorio' %}">
-                        <i class="fas fa-download me-2"></i>Relatórios
-                    </a>
-                </li>
-                <li class="nav-item mt-4">
-                    <a class="nav-link text-danger" href="{% url 'logout' %}">
-                        <i class="fas fa-sign-out-alt me-2"></i>Sair
-                    </a>
-                </li>
-            </ul>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-file-invoice me-2"></i>Notas Pendentes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-chart-line me-2"></i>Estatísticas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'pre_relatorio' %}">
+                            <i class="fas fa-download me-2"></i>Relatórios
+                        </a>
+                    </li>
+                    <!-- Novo item adicionado -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ftp_lista' %}">
+                            <i class="fas fa-server me-2"></i>Acesso FTP
+                        </a>
+                    </li>
+                    <li class="nav-item mt-4">
+                        <a class="nav-link text-danger" href="{% url 'logout' %}">
+                            <i class="fas fa-sign-out-alt me-2"></i>Sair
+                        </a>
+                    </li>
+                </ul>
         </nav>
 
         <!-- Conteúdo Principal -->

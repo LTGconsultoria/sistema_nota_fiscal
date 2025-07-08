@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Arquivos FTP - LTG Consultoria{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css ">
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <h2>Explorador de Arquivos FTP</h2>
+            <p><strong>Caminho Atual:</strong> {{ current_path }}</p>
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Diretórios lado a lado -->
+        <div class="col-md-12 mb-4">
+            <h5>Pastas:</h5>
+            <div class="d-flex flex-wrap gap-3">
+                {% for directory in directories %}
+                    <div class="text-center">
+                        <a href="?path={{ current_path }}{{ directory }}/" class="text-decoration-none text-reset">
+                            <i class="fas fa-folder-open fa-2x text-warning mb-2"></i>
+                            <div>{{ directory }}</div>
+                        </a>
+                    </div>
+                {% empty %}
+                    <div>Sem pastas encontradas.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Arquivos -->
+        <div class="col-md-12 mt-4">
+            <h5>Arquivos:</h5>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Data de Modificação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in files %}
+                    <tr>
+                        <td>
+                            {% if file.name|lower|slice:"-4:" == ".pdf" %}
+                                <i class="far fa-file-pdf text-danger me-2"></i>
+                            {% else %}
+                                <i class="far fa-file me-2"></i>
+                            {% endif %}
+                            {{ file.name }}
+                        </td>
+                        <td>{{ file.modified }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2">Sem arquivos encontrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Botão Voltar à Raiz -->
+        <div class="col-md-12 mt-3 text-end">
+            <a href="?path=/" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-home me-1"></i>Voltar à raiz
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

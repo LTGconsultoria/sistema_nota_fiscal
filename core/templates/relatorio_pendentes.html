@@ -1,0 +1,132 @@
+<!-- templates/relatorio_pendencias.html -->
+{% extends "base.html" %}
+{% block title %}Relatório de Pendências - LTG Consultoria{% endblock %}
+{% block content %}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2>Relatório de Pendências</h2>
+            <p><strong>Período:</strong> {{ data_inicio }} até {{ data_fim }}</p>
+            <p><strong>Total de Pendências:</strong> 27</p>
+        </div>
+    </div>
+
+    <!-- Cards Resumo -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h6 class="card-title">XML Inválido</h6>
+                    <p class="card-text display-6">9</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h6 class="card-title">Chave Duplicada</h6>
+                    <p class="card-text display-6">5</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-secondary">
+                <div class="card-body">
+                    <h6 class="card-title">Assinatura Inválida</h6>
+                    <p class="card-text display-6">7</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-dark">
+                <div class="card-body">
+                    <h6 class="card-title">Outros Erros</h6>
+                    <p class="card-text display-6">6</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Pendências -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Pendências Registradas</h5>
+                    <span class="badge bg-danger">Últimas 72h</span>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Tipo</th>
+                                <th>Chave / Protocolo</th>
+                                <th>Motivo</th>
+                                <th>Arquivo</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2025-04-05 14:30</td>
+                                <td>NF-e</td>
+                                <td>52250412345678901234567890123456789012345678</td>
+                                <td>XML mal formado</td>
+                                <td>/notas/empresaA/nfe_1234.xml</td>
+                                <td><span class="badge bg-danger">Pendente</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1" title="Visualizar"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-success" title="Resolver"><i class="fas fa-check"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2025-04-05 15:10</td>
+                                <td>CT-e</td>
+                                <td>52250498765432109876543210987654321098765432</td>
+                                <td>Chave duplicada</td>
+                                <td>/notas/empresaB/cte_789.xml</td>
+                                <td><span class="badge bg-warning">Em Análise</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1" title="Visualizar"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-success" title="Resolver"><i class="fas fa-check"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2025-04-05 16:45</td>
+                                <td>MDF-e</td>
+                                <td>522504555666777000888999000111222333444555</td>
+                                <td>Assinatura inválida</td>
+                                <td>/notas/empresaC/mdfe_456.xml</td>
+                                <td><span class="badge bg-danger">Pendente</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1" title="Visualizar"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-success" title="Resolver"><i class="fas fa-check"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botões -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <a href="{% url 'pre_relatorio' %}" class="btn btn-secondary me-2">
+                <i class="fas fa-arrow-left me-2"></i>Voltar
+            </a>
+            <button class="btn btn-success" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Imprimir Relatório
+            </button>
+            <button class="btn btn-outline-primary ms-2">
+                <i class="fas fa-file-excel me-2"></i>Exportar Excel
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

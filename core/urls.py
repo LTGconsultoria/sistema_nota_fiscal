@@ -7,7 +7,9 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('pre_relatorio/', views.pre_relatorio_view, name='pre_relatorio'),
-    path('ftp/', views.lista_pdfs_ftp, name='ftp_lista'),
+    path('ftp/', views.lista_pdfs_ftp, name='lista_pdfs_ftp'),
+    path('ftp/arquivo/<path:arquivo>/', views.abrir_arquivo_ftp, name='abrir_arquivo_ftp'),
+    path('ftp/upload/', views.upload_arquivo_ftp, name='upload_arquivo_ftp'),
     # Adicione esta linha para a rota de logout:
     path('logout/', views.login_view, name='logout'),
     path('relatorios/geral/<str:data_inicio>/<str:data_fim>/', views.relatorio_geral_view, name='relatorio_geral'),

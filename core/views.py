@@ -105,10 +105,19 @@ def relatorio_usuario_view(request, data_inicio, data_fim):
 @login_required
 def lista_pdfs_ftp(request):
     DEFAULT_PATH = '/00-JSG-FTP (GERAL)/'
-
     current_path = request.GET.get('path', DEFAULT_PATH).strip()
 
+    # Garantir que o caminho não tenha '..' ou navegação acima da raiz
+    if '..' in current_path or current_path.startswith('/..'):
+        return HttpResponse("Acesso negado.", status=403)
+
+    # Garantir que termine com barra
+    if not current_path.endswith('/'):
+        current_path += '/'
+
+    # Redireciona para a URL com path padrão se não foi informado
     if request.GET.get('path') is None:
+        from django.shortcuts import redirect
         return redirect(f"{request.path}?path={DEFAULT_PATH}")
 
     host = "6f38071ad3d5.sn.mynetname.net"
@@ -134,18 +143,6 @@ def lista_pdfs_ftp(request):
         "Dec": "dezembro"
     }
 
-    def format_size(size_bytes):
-        if size_bytes < 0:
-            return "Desconhecido"
-        elif size_bytes < 1024:
-            return f"{size_bytes} B"
-        elif size_bytes < 1024 * 1024:
-            return f"{size_bytes / 1024:.1f} KB"
-        elif size_bytes < 1024 * 1024 * 1024:
-            return f"{size_bytes / (1024 * 1024):.1f} MB"
-        else:
-            return f"{size_bytes / (1024 * 1024 * 1024):.1f} GB"
-
     try:
         with FTP() as ftp:
             ftp.connect(host, port=9921)
@@ -153,56 +150,48 @@ def lista_pdfs_ftp(request):
             ftp.cwd(current_path)
 
             entries = []
-            ftp.retrlines('LIST', lambda line: entries.append(line))
 
-            for entry in entries:
-                parts = entry.split()
-                if not parts:
-                    continue
-
-                name = parts[-1]
-
+            # Listando com mlsd e armazenando resultados
+            for name, facts in ftp.mlsd():
                 if name in ('.', '..'):
                     continue
+                entries.append({
+                    'name': name,
+                    'type': facts['type'],
+                    'modified': facts.get('modify', 'sem-data'),
+                    'size': facts.get('size', '0')
+                })
 
-                if entry.startswith('d'):
-                    directories.append(name)
-                else:
+            # Imprime no console todo o conteúdo do diretório
+            print("\n" + "=" * 60)
+            print(f"Conteúdo do diretório: {current_path}")
+            print("-" * 60)
+            for item in entries:
+                tipo = "📁 Pasta" if item['type'] == 'dir' else "📄 Arquivo"
+                print(f"{tipo}: {item['name']} | Modificado: {item['modified']}")
+            print("=" * 60 + "\n")
+
+            # Preenchendo as listas de pastas e arquivos
+            for item in entries:
+                if item['type'] == 'dir':
+                    directories.append(item['name'])
+                elif item['type'] == 'file':
+                    modified = item['modified']
                     try:
-                        size = int(parts[4])
-                        date_parts = parts[5:8]
-                        modified_str = ' '.join(date_parts)
-
-                        from datetime import datetime
-                        try:
-                            dt = datetime.strptime(modified_str, "%b %d %H:%M")
-                            year = datetime.now().year
-                            dt = dt.replace(year=year)
-                        except ValueError:
-                            dt = datetime.strptime(f"{date_parts[0]} {date_parts[1]} {date_parts[2]}", "%b %d %Y")
-
-                        mes_abreviado = dt.strftime("%b")
+                        dt = datetime.strptime(modified, "%Y%m%d%H%M%S")
+                        mes_abreviado = dt.strftime("%b").capitalize()
                         mes_extenso = MES_POR_EXTENSO.get(mes_abreviado, mes_abreviado)
-                        modified = f"{dt.day}/{mes_extenso}/{dt.year}"
+                        modified = f"{dt.day} de {mes_extenso} de {dt.year}"
+                    except Exception:
+                        modified = "Desconhecida"
 
-                        files.append({
-                            'name': name,
-                            'size': format_size(size),
-                            'modified': modified,
-                        })
-                    except IndexError:
-                        files.append({
-                            'name': name,
-                            'size': 'Desconhecido',
-                            'modified': 'Desconhecida',
-                        })
+                    files.append({
+                        'name': item['name'],
+                        'modified': modified
+                    })
 
-    except ftplib.error_perm as e:
-        error = f"Erro de permissão ou caminho inválido: {str(e)}"
-    except ftplib.all_errors as e:
-        error = f"Erro na conexão FTP: {str(e)}"
     except Exception as e:
-        error = f"Erro inesperado: {str(e)}"
+        error = f"Erro ao acessar o FTP: {str(e)}"
 
     return render(request, 'ftp_lista.html', {
         'current_path': current_path,
@@ -210,26 +199,95 @@ def lista_pdfs_ftp(request):
         'files': files,
         'error': error,
     })
+# views.py
+import io
+from django.http import HttpResponse, Http404
+from django.contrib.auth.decorators import login_required
+from ftplib import FTP
+
 
 @login_required
-def visualizar_pdf_ftp(request, arquivo):
+def abrir_arquivo_ftp(request, arquivo):
     host = "6f38071ad3d5.sn.mynetname.net"
     usuario = "sdr.lucas.marins"
     senha = "sdr.lucas.marins@ftp"
 
     buffer = io.BytesIO()
+
     try:
-        with ftplib.FTP(host) as ftp:
+        with FTP() as ftp:
+            ftp.connect(host, 9921)
             ftp.login(usuario, senha)
             ftp.retrbinary(f'RETR {arquivo}', buffer.write)
-        pdf_content = buffer.getvalue()
 
-        response = HttpResponse(pdf_content, content_type='application/pdf')
-        response['Content-Disposition'] = f'inline; filename="{arquivo}"'
+        conteudo = buffer.getvalue()
+        nome_arquivo = arquivo.split('/')[-1]
+
+        # Detectar se é PDF
+        if nome_arquivo.lower().endswith('.pdf'):
+            response = HttpResponse(conteudo, content_type='application/pdf')
+            response['Content-Disposition'] = f'inline; filename="{nome_arquivo}"'
+        else:
+            response = HttpResponse(conteudo, content_type='application/octet-stream')
+            response['Content-Disposition'] = f'attachment; filename="{nome_arquivo}"'
+
         return response
 
     except Exception as e:
-        return HttpResponse(f"Erro ao carregar o PDF: {e}", content_type='text/plain')
+        return HttpResponse(f"Erro ao carregar o arquivo: {e}", content_type='text/plain')
+
+
+# views.py
+import ftplib
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
+
+
+@login_required
+def upload_arquivo_ftp(request):
+    current_path = request.GET.get('path', '/00-JSG-FTP (GERAL)/').strip()
+    centro_custo = request.POST.get('centro_custo', '')
+    descricao = request.POST.get('descricao', '')
+
+    if request.method == 'POST' and request.FILES.get('arquivo'):
+        upload_file = request.FILES['arquivo']
+
+        host = "6f38071ad3d5.sn.mynetname.net"
+        usuario = "sdr.lucas.marins"
+        senha = "sdr.lucas.marins@ftp"
+
+        try:
+            with ftplib.FTP() as ftp:
+                ftp.connect(host, 9921)
+                ftp.login(usuario, senha)
+                ftp.cwd(current_path)
+
+                # Fazer upload do arquivo
+                ftp.storbinary(f'STOR {upload_file.name}', upload_file.file)
+
+            # Redireciona de volta para o mesmo diretório
+            return HttpResponseRedirect(reverse('lista_pdfs_ftp') + f'?path={current_path}')
+
+        except Exception as e:
+            return HttpResponse(f"Erro ao fazer upload: {e}", content_type='text/plain')
+
+    # Dados fictícios para mostrar no form
+    centros_ficticios = [
+        "CC001 - Administrativo",
+        "CC002 - Produção",
+        "CC003 - Comercial",
+        "CC004 - TI",
+        "CC005 - RH"
+    ]
+
+    return render(request, 'ftp_upload.html', {
+        'current_path': current_path,
+        'centros_ficticios': centros_ficticios,
+        'centro_custo': centro_custo,
+        'descricao': descricao,
+    })
+
 
 
 def logout_view(request):

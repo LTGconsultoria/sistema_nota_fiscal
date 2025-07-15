@@ -31,7 +31,12 @@
                 {% endfor %}
             </div>
         </div>
-
+<!-- Botão de Upload -->
+<div class="col-md-12 mb-3">
+    <a href="{% url 'upload_arquivo_ftp' %}?path={{ current_path }}" class="btn btn-success btn-sm">
+        <i class="fas fa-upload me-1"></i>Fazer Upload
+    </a>
+</div>
         <!-- Arquivos -->
         <div class="col-md-12 mt-4">
             <h5>Arquivos:</h5>
@@ -40,6 +45,7 @@
                     <tr>
                         <th>Nome</th>
                         <th>Data de Modificação</th>
+                        <th>Ação</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,10 +60,21 @@
                             {{ file.name }}
                         </td>
                         <td>{{ file.modified }}</td>
+                        <td>
+                            <a href="{% url 'abrir_arquivo_ftp' arquivo=current_path|add:file.name %}"
+                            class="btn btn-sm btn-primary"
+                            target="_blank">
+                                {% if file.name|lower|slice:"-4:" == ".pdf" %}
+                                    Visualizar
+                                {% else %}
+                                    Baixar
+                                {% endif %}
+                            </a>
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="2">Sem arquivos encontrados.</td>
+                        <td colspan="3">Sem arquivos encontrados.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

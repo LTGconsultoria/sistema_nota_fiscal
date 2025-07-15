@@ -28,9 +28,6 @@ DEBUG = True  # Alterado para False (recomendado em produção)
 ALLOWED_HOSTS = [
     '31.97.165.178',
     'ltgconsultoriadeinformatica.cloud',
-    'www.ltgconsultoriadeinformatica.cloud',
-    'localhost',
-    '127.0.0.1'
 ]
 
 

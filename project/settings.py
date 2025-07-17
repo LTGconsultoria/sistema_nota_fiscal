@@ -23,15 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-^0e#i4u2re+yu&3#x@k1bxxd@ezkpu48q!ggvljtp=xh5aq9f!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # Alterado para False (recomendado em produção)
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    '*'
+    'ltgconsultoriadeinformatica.cloud',
+    'www.ltgconsultoriadeinformatica.cloud',
 ]
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -74,7 +73,6 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -85,7 +83,6 @@ DATABASES = {
 
 # Password validation
 #  https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -104,50 +101,41 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 #  https://docs.djangoproject.com/en/5.2/topics/i18n/ 
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/ 
-
 STATIC_URL = '/static/'
-
-# Onde o Django procura arquivos estáticos nos apps
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'core', 'static')  # Apenas dentro do app core
-]
-
-# Pasta onde os arquivos são coletados em produção
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'core', 'static')
+]
 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 # Logout redirect
 LOGOUT_REDIRECT_URL = '/login/'
 
-# settings.py
-
+# Configurações de segurança para produção
 CSRF_TRUSTED_ORIGINS = [
-    'https://ltgconsultoriadeinformatica.cloud ',
-    'https://www.ltgconsultoriadeinformatica.cloud ',  # opcional, se usar www
+    ' https://ltgconsultoriadeinformatica.cloud ',
+    'https://www.ltgconsultoriadeinformatica.cloud ',
 ]
 
-# settings.py
+CSRF_COOKIE_SECURE = True  # Obrigatório com HTTPS
+SESSION_COOKIE_SECURE = True  # Obrigatório com HTTPS
+CSRF_USE_SESSIONS = False
 
-CSRF_COOKIE_SECURE = True  # se estiver usando HTTPS
-SESSION_COOKIE_SECURE = True  # se estiver usando HTTPS
-CSRF_USE_SESSIONS = False  # ou True, dependendo da sua configuração
+# Opcional (se estiver usando subdomínios como app.ltgconsultoriadeinformatica.cloud)
+CSRF_COOKIE_DOMAIN = '.ltgconsultoriadeinformatica.cloud'
+SESSION_COOKIE_DOMAIN = '.ltgconsultoriadeinformatica.cloud'
 
+# Se estiver usando proxy reverso (Nginx, Caddy, etc.)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

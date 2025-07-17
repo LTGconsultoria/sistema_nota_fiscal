@@ -136,3 +136,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Logout redirect
 LOGOUT_REDIRECT_URL = '/login/'
+
+# settings.py
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://ltgconsultoriadeinformatica.cloud ',
+    'https://www.ltgconsultoriadeinformatica.cloud ',  # opcional, se usar www
+]
+
+# settings.py
+
+CSRF_COOKIE_SECURE = True  # se estiver usando HTTPS
+SESSION_COOKIE_SECURE = True  # se estiver usando HTTPS
+CSRF_USE_SESSIONS = False  # ou True, dependendo da sua configuração
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

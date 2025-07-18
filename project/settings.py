@@ -70,7 +70,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 DATABASES = {
@@ -79,7 +78,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 #  https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -98,26 +96,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-#  https://docs.djangoproject.com/en/5.2/topics/i18n/ 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/ 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'core', 'static')
 ]
 
-
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Logout redirect
@@ -133,9 +125,8 @@ CSRF_COOKIE_SECURE = True  # Obrigatório com HTTPS
 SESSION_COOKIE_SECURE = True  # Obrigatório com HTTPS
 CSRF_USE_SESSIONS = False
 
-# Opcional (se estiver usando subdomínios como app.ltgconsultoriadeinformatica.cloud)
-CSRF_COOKIE_DOMAIN = '.ltgconsultoriadeinformatica.cloud'
-SESSION_COOKIE_DOMAIN = '.ltgconsultoriadeinformatica.cloud'
+# Removendo o ponto inicial se NÃO estiver usando subdomínios
+CSRF_COOKIE_DOMAIN = 'ltgconsultoriadeinformatica.cloud'
+SESSION_COOKIE_DOMAIN = 'ltgconsultoriadeinformatica.cloud'
 
-# Se estiver usando proxy reverso (Nginx, Caddy, etc.)
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Se estiver usando proxy reverso (Nginx, Caddy, etc.)s

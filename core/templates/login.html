@@ -1,143 +1,90 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Login - LTG Consultoria</title>
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"  rel="stylesheet">
-
-    <!-- Font Awesome Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"  rel="stylesheet">
-
-    {% load static %}
-    <style>
-        body {
-            background: #f8f9fa;
+    <base href="/" />
+    <meta charset="UTF-8" />
+    <title>Sistema Interno FAGIFOR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+    <link href="{% static 'css/plugins/global/plugins.bundle.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'css/style.bundle.css' %}" rel="stylesheet" type="text/css" />
+    <script>
+        if (window.top != window.self) {
+            window.top.location.replace(window.self.location.href);
         }
-
-        .login-container {
-            max-width: 400px;
-            margin: 8% auto;
-            padding: 2rem;
-            border-radius: 10px;
-            background-color: white;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-
-        .logo {
-            width: 100%;
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .logo img {
-            max-width: 120px;
-            height: auto;
-        }
-
-        .input-group-text {
-            background-color: #e9ecef;
-            border-right: none;
-        }
-
-        .form-control {
-            border-left: none;
-        }
-
-        .password-toggle {
-            cursor: pointer;
-            color: #6c757d;
-        }
-
-        .password-toggle:hover {
-            color: #495057;
-        }
-
-        .btn-submit-loader {
-            position: relative;
-        }
-
-        .btn-submit-loader .spinner-border {
-            display: none;
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .alert {
-            border-radius: 5px;
-            padding: 0.6rem 1rem;
-            font-size: 0.9rem;
-        }
-    </style>
+    </script>
 </head>
-<body>
+<body id="kt_body" class="app-blank app-blank">
+    <script>
+        var defaultThemeMode = "light";
+        var themeMode = localStorage.getItem("data-bs-theme") || defaultThemeMode;
+        if (themeMode === "system") {
+            themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.setAttribute("data-bs-theme", themeMode);
+    </script>
 
-<div class="login-container">
-    <div class="logo">
-        <img src="{% static 'images/logo_ltg_consultoria.png' %}" alt="Logo LTG Consultoria">
-        <p class="text-muted mt-2">Sistema de Leitor de Nota Fiscal</p>
+    <div class="d-flex flex-column flex-root" id="kt_app_root">
+        <div class="d-flex flex-column flex-lg-row flex-column-fluid">
+            <div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center" style="background-color: #FECA0A;">
+                <div class="d-flex flex-column flex-center p-6 p-lg-10 w-100">
+                    <img class="d-none d-lg-block mx-auto w-100px w-lg-75 w-xl-300px mb-10 mb-lg-20" src="{% static 'img/logo_fagifor.png' %}" alt="Logo" />
+                    <div class="d-none d-lg-block text-white fs-base text-center">
+                        Bem-vindo ao Sistema Interno Fagifor <br><br> Solução integrada para gerenciamento de equipe.
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex flex-column flex-lg-row-fluid w-lg-50 p-10">
+                <div class="d-flex flex-center flex-column flex-lg-row-fluid">
+                    <div class="w-lg-500px p-10">
+                        <form class="form w-100" method="POST" action="">
+                            {% csrf_token %}
+                            {% if error %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{ error }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endif %}
+
+                            <div class="text-center mb-11">
+                                <h1 class="text-dark fw-bolder mb-3">Sistema Fagifor</h1>
+                                <div class="text-gray-500 fw-semibold fs-6">Projetos inovadores hospitalar</div>
+                            </div>
+
+                            <div class="fv-row mb-8">
+                                <input type="text" name="username" placeholder="Usuário" autocomplete="off" class="form-control bg-transparent" required />
+                            </div>
+
+                            <div class="fv-row mb-3">
+                                <input type="password" name="password" placeholder="Senha" autocomplete="off" class="form-control bg-transparent" required />
+                            </div>
+
+                            <div class="d-grid mb-10">
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="indicator-label">Login</span>
+                                    <span class="indicator-progress">Aguarde...
+                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-center flex-wrap px-5">
+                    <div class="d-flex fw-semibold text-primary fs-base">
+                        <a href="#" class="px-5" target="_blank">&copy; Copyright Setor Desenvolvimento COTIC FAGIFOR. Todos os direitos reservados.</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-danger mb-3">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-
-    <form id="loginForm" method="post">
-        {% csrf_token %}
-        <div class="mb-3 input-group">
-            <span class="input-group-text"><i class="fas fa-user"></i></span>
-            <input type="text" name="username" class="form-control" placeholder="Usuário" required>
-        </div>
-
-        <div class="mb-3 input-group position-relative">
-            <span class="input-group-text"><i class="fas fa-lock"></i></span>
-            <input type="password" name="password" id="passwordInput" class="form-control" placeholder="Senha" required>
-            <span class="input-group-text password-toggle" onclick="togglePassword()">
-                <i id="eyeIcon" class="fas fa-eye"></i>
-            </span>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100 btn-submit-loader">
-            <i class="fas fa-sign-in-alt me-2"></i>Entrar
-            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-        </button>
-    </form>
-</div>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> 
-
-<!-- Script para mostrar/ocultar senha -->
-<script>
-    function togglePassword() {
-        const input = document.getElementById('passwordInput');
-        const icon = document.getElementById('eyeIcon');
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    }
-
-    // Animação de loading no botão
-    const form = document.getElementById('loginForm');
-    const btn = form.querySelector('.btn-submit-loader');
-    const spinner = btn.querySelector('.spinner-border');
-
-    form.addEventListener('submit', function () {
-        btn.disabled = true;
-        spinner.classList.remove('d-none');
-    });
-</script>
-
+    <script src="{% static 'js/plugins/global/plugins.bundle.js' %}"></script>
+    <script src="{% static 'js/scripts.bundle.js' %}"></script>
+    <script src="{% static 'js/custom/authentication/sign-in/general.js' %}"></script>
 </body>
 </html>

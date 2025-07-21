@@ -10,6 +10,7 @@ DEBUG = False
 ALLOWED_HOSTS = [
     'ltgconsultoriadeinformatica.cloud',
     'www.ltgconsultoriadeinformatica.cloud',
+    '127.0.0.1'
 ]
 
 INSTALLED_APPS = [
@@ -73,10 +74,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+# Ajuste o código do idioma para 'pt-br'
+LANGUAGE_CODE = 'pt-br'
+
+# Ajuste o fuso horário para 'America/Sao_Paulo'
+TIME_ZONE = 'America/Sao_Paulo'
+
+# Certifique-se de que a internacionalização está ativada
 USE_I18N = True
+
+# Certifique-se de que a localização está ativada
+USE_L10N = True
+
+# Use o fuso horário especificado nas operações de tempo
 USE_TZ = True
+
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

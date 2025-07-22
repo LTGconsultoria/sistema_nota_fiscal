@@ -79,7 +79,7 @@ def relatorio_estatisticas_view(request, data_inicio, data_fim):
         'data_inicio': data_inicio,
         'data_fim': data_fim
     }
-    return render(request, 'relatorios/relatorio_estatisticas.html', context)
+    return render(request, 'relatorio_estatisticas.html', context)
 
 
 @login_required
@@ -88,16 +88,7 @@ def relatorio_erros_view(request, data_inicio, data_fim):
         'data_inicio': data_inicio,
         'data_fim': data_fim
     }
-    return render(request, 'relatorios/relatorio_erros.html', context)
-
-
-@login_required
-def relatorio_usuario_view(request, data_inicio, data_fim):
-    context = {
-        'data_inicio': data_inicio,
-        'data_fim': data_fim
-    }
-    return render(request, 'relatorios/relatorio_usuario.html', context)
+    return render(request, 'relatorio_erros.html', context)
 
 
 # === View de Acesso ao FTP ===

@@ -2,87 +2,101 @@
 {% block title %}Relatório Geral - LTG Consultoria{% endblock %}
 {% block content %}
 
-<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h2>Relatório Geral de Processamento</h2>
-            <p><strong>Período:</strong> {{ data_inicio }} até {{ data_fim }}</p>
-        </div>
-    </div>
+<div class="d-flex flex-column flex-column-fluid">
 
-    <!-- Indicadores Gerais -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card text-white bg-primary">
-                <div class="card-body">
-                    <h5 class="card-title">Notas Lidas</h5>
-                    <p class="card-text display-6">1.230</p>
-                </div>
+    <!--begin::Toolbar-->
+    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+        <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                <h1 class="page-heading text-gray-900 fw-bold fs-3 my-0">Relatório Geral de Processamento</h1>
+                <span class="text-muted fs-6 mt-1">Período: {{ data_inicio }} até {{ data_fim }}</span>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    <h5 class="card-title">Importadas</h5>
-                    <p class="card-text display-6">1.180</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-danger">
-                <div class="card-body">
-                    <h5 class="card-title">Pendências</h5>
-                    <p class="card-text display-6">50</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-info">
-                <div class="card-body">
-                    <h5 class="card-title">Taxa de Sucesso</h5>
-                    <p class="card-text display-6">96%</p>
-                </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'pre_relatorio' %}" class="btn btn-light-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Voltar
+                </a>
+                <button class="btn btn-success" onclick="window.print()">
+                    <i class="fas fa-print me-2"></i>Imprimir
+                </button>
             </div>
         </div>
     </div>
+    <!--end::Toolbar-->
 
-    <!-- Gráfico de distribuição por tipo -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Distribuição por Tipo de Nota</h5>
+    <!--begin::Content-->
+    <div id="kt_app_content" class="app-content flex-column-fluid">
+        <div class="app-container container-fluid">
+
+            <!-- Indicadores -->
+            <div class="row g-4 mb-6">
+                <div class="col-md-3">
+                    <div class="card card-bordered bg-primary text-white">
+                        <div class="card-body text-center py-4">
+                            <h5 class="fw-semibold">Notas Lidas</h5>
+                            <div class="fs-1 fw-bold">1.230</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <canvas id="graficoTipos"></canvas>
+                <div class="col-md-3">
+                    <div class="card card-bordered bg-success text-white">
+                        <div class="card-body text-center py-4">
+                            <h5 class="fw-semibold">Importadas</h5>
+                            <div class="fs-1 fw-bold">1.180</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card card-bordered bg-danger text-white">
+                        <div class="card-body text-center py-4">
+                            <h5 class="fw-semibold">Pendências</h5>
+                            <div class="fs-1 fw-bold">50</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card card-bordered bg-info text-white">
+                        <div class="card-body text-center py-4">
+                            <h5 class="fw-semibold">Taxa de Sucesso</h5>
+                            <div class="fs-1 fw-bold">96%</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Gráfico de tendências -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Tendência Diária de Notas Processadas</h5>
+            <!-- Gráficos -->
+            <div class="row g-6 mb-6">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="card-title">Distribuição por Tipo de Nota</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="graficoTipos"></canvas>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <canvas id="graficoTendencia"></canvas>
+
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="card-title">Tendência Diária</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="graficoTendencia"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Tabela de Pendências -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
+            <!-- Tabela -->
+            <div class="card shadow-sm mb-6">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5>Pendências Recentes</h5>
+                    <h5 class="card-title">Pendências Recentes</h5>
                     <span class="badge bg-warning text-dark">Últimas 24h</span>
                 </div>
                 <div class="card-body">
-                    <table class="table table-hover">
-                        <thead>
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light fw-bold">
                             <tr>
                                 <th>Data/Hora</th>
                                 <th>Tipo</th>
@@ -117,36 +131,23 @@
                     </table>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Botões de ação -->
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <a href="{% url 'pre_relatorio' %}" class="btn btn-secondary me-2">
-                <i class="fas fa-arrow-left me-2"></i>Voltar
-            </a>
-            <button class="btn btn-success" onclick="window.print()">
-                <i class="fas fa-print me-2"></i>Imprimir Relatório
-            </button>
         </div>
     </div>
+    <!--end::Content-->
+
 </div>
 
 <!-- Scripts dos gráficos -->
 <script>
-    // Gráfico de tipos de notas
     const ctxTipos = document.getElementById('graficoTipos').getContext('2d');
     new Chart(ctxTipos, {
         type: 'pie',
         data: {
             labels: ['NF-e', 'CT-e', 'MDF-e', 'Outros'],
             datasets: [{
-                label: 'Distribuição',
                 data: [800, 200, 100, 50],
-                backgroundColor: [
-                    '#007bff', '#28a745', '#ffc107', '#6c757d'
-                ],
+                backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#6c757d'],
                 borderColor: '#fff'
             }]
         },
@@ -160,7 +161,6 @@
         }
     });
 
-    // Gráfico de tendências diárias
     const ctxTendencia = document.getElementById('graficoTendencia').getContext('2d');
     new Chart(ctxTendencia, {
         type: 'line',
@@ -169,9 +169,10 @@
             datasets: [{
                 label: 'Notas Processadas',
                 data: [120, 140, 130, 160, 150, 80],
-                borderColor: '#007bff',
-                fill: false,
-                tension: 0.3
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                fill: true,
+                tension: 0.4
             }]
         },
         options: {
@@ -186,3 +187,4 @@
 </script>
 
 {% endblock %}
+ 

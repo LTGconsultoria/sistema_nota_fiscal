@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block title %}Estatísticas Mensais - LTG Consultoria{% endblock %}
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- Cabeçalho -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold">Relatório de Estatísticas Mensais</h2>
+            <p><strong>Período:</strong> {{ data_inicio }} até {{ data_fim }}</p>
+        </div>
+    </div>
+
+    <!-- Totais Fiscais -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white text-start">
+                <div class="card-body">
+                    <h6 class="fw-bold fs-6 text-white border-bottom pb-2 mb-3">Total de Notas</h6>
+                    <div class="display-6 fw-bold">982</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white text-start">
+                <div class="card-body">
+                    <h6 class="fw-bold fs-6 text-white border-bottom pb-2 mb-3">Total Entradas (R$)</h6>
+                    <div class="display-6 fw-bold">1.230.000,00</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark text-start">
+                <div class="card-body">
+                    <h6 class="fw-bold fs-6 text-dark border-bottom pb-2 mb-3">Total Saídas (R$)</h6>
+                    <div class="display-6 fw-bold">2.870.000,00</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white text-start">
+                <div class="card-body">
+                    <h6 class="fw-bold fs-6 text-white border-bottom pb-2 mb-3">Total Tributos Estimados</h6>
+                    <div class="display-6 fw-bold">738.520,00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indicadores Técnicos -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card border shadow-sm h-100 text-start">
+                <div class="card-body">
+                    <h6 class="fw-bold fs-6 text-dark border-bottom pb-2 mb-3">Notas com Erro de Leitura</h6>
+                    <p class="display-6 text-danger fw-bold">31</p>
+                    <small class="text-muted">3,15% do total</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border shadow-sm h-100 text-start">
+                <div class="card-body">
+                    <h6 class="fw-bold fs-6 text-dark border-bottom pb-2 mb-3">Tempo Médio de Processamento</h6>
+                    <p class="display-6 text-primary fw-bold">2.3s</p>
+                    <small class="text-muted">por nota fiscal</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border shadow-sm h-100 text-start">
+                <div class="card-body">
+                    <h6 class="fw-bold fs-6 text-dark border-bottom pb-2 mb-3">Notas com Divergência</h6>
+                    <p class="display-6 text-warning fw-bold">17</p>
+                    <small class="text-muted">ex: CNPJ ou valor divergente</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela por CFOP -->
+    <div class="card mb-4 border shadow-sm">
+        <div class="card-body">
+            <h6 class="fw-bold fs-6 text-dark border-bottom pb-2 mb-3">Resumo por CFOP</h6>
+            <div class="card-body table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>CFOP</th>
+                            <th>Descrição</th>
+                            <th>Quantidade</th>
+                            <th>Valor Total (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>5102</td><td>Venda dentro do estado</td><td>434</td><td>1.560.000,00</td></tr>
+                        <tr><td>6108</td><td>Venda para fora do estado</td><td>181</td><td>730.000,00</td></tr>
+                        <tr><td>1101</td><td>Compra de mercadoria</td><td>312</td><td>980.000,00</td></tr>
+                        <tr><td>1556</td><td>Bonificação</td><td>55</td><td>0,00</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela por UF -->
+    <div class="card mb-4 border shadow-sm">
+        <div class="card-body">
+            <h6 class="fw-bold fs-6 text-dark border-bottom pb-2 mb-3">Distribuição por Estado (UF)</h6>
+            <div class="card-body table-responsive">
+                <table class="table table-sm table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>UF</th>
+                            <th>Entradas</th>
+                            <th>Saídas</th>
+                            <th>Base de ICMS (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>SP</td><td>220</td><td>310</td><td>850.000,00</td></tr>
+                        <tr><td>MG</td><td>50</td><td>100</td><td>210.000,00</td></tr>
+                        <tr><td>RJ</td><td>38</td><td>57</td><td>180.000,00</td></tr>
+                        <tr><td>PR</td><td>4</td><td>15</td><td>35.000,00</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Fornecedores e Clientes -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card h-100 border shadow-sm">
+                <div class="card-body">
+                    <h6 class="fw-bold fs-6 text-dark border-bottom pb-2 mb-3">Top 5 Fornecedores</h6>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Fornecedor Alpha LTDA</span><strong>R$ 350.000,00</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Distribuidora Beta</span><strong>R$ 280.000,00</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Indústria Gama</span><strong>R$ 180.000,00</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Atacadista Rio</span><strong>R$ 110.000,00</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Outros</span><strong>R$ 310.000,00</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100 border shadow-sm">
+                <div class="card-body">
+                    <h6 class="fw-bold fs-6 text-dark border-bottom pb-2 mb-3">Top 5 Clientes</h6>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Supermercado São João</span><strong>R$ 620.000,00</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Construtora Ideal</span><strong>R$ 400.000,00</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Farmácia Vida</span><strong>R$ 280.000,00</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Distribuidora Sul</span><strong>R$ 160.000,00</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Outros</span><strong>R$ 150.000,00</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botões -->
+    <div class="d-flex justify-content-start gap-3 mt-4">
+        <a href="{% url 'pre_relatorio' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Voltar
+        </a>
+        <button class="btn btn-success" onclick="window.print()">
+            <i class="fas fa-print me-2"></i>Imprimir
+        </button>
+        <button class="btn btn-outline-primary">
+            <i class="fas fa-file-excel me-2"></i>Exportar Excel
+        </button>
+    </div>
+
+</div>
+
+{% endblock %}

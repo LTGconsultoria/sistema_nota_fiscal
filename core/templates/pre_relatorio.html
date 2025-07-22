@@ -2,83 +2,113 @@
 {% block title %}Relatórios - LTG Consultoria{% endblock %}
 {% block content %}
 
-<div class="container-fluid py-4">
-    <div class="row">
-        <!-- Título -->
-        <div class="col-12 mb-4">
-            <h2 class="fw-bold text-dark">Solicitação de Relatórios</h2>
-            <hr class="text-muted">
-        </div>
+<div class="d-flex flex-column flex-column-fluid">
 
-        <!-- Conteúdo Principal -->
-        <div class="col-md-8 col-lg-7 mb-4">
-            <form method="post">
-                {% csrf_token %}
-                <!-- Tipo de Relatório -->
-                <div class="mb-3">
-                    <label for="tipo_relatorio" class="form-label fw-bold">Tipo de Relatório</label>
-                    <select id="tipo_relatorio" name="tipo_relatorio" class="form-select" required>
-                        <option value="">Selecione...</option>
-                        <option value="geral">Relatório Geral</option>
-                        <option value="pendentes">Notas Pendentes</option>
-                        <option value="por_empresa">Notas por Empresa</option>
-                        <option value="estatisticas">Estatísticas Mensais</option>
-                        <option value="erros">Histórico de Erros</option>
-                        <option value="por_usuario">Notas por Usuário</option>
-                    </select>
-                    <small class="text-muted mt-1">Escolha o tipo de relatório que deseja gerar.</small>
-                </div>
-
-                <!-- Datas -->
-                <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                        <label for="data_inicio" class="form-label fw-bold">Data Inicial</label>
-                        <input type="date" id="data_inicio" name="data_inicio" class="form-control" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="data_fim" class="form-label fw-bold">Data Final</label>
-                        <input type="date" id="data_fim" name="data_fim" class="form-control" required>
-                    </div>
-                </div>
-
-                <!-- Descrição Dinâmica -->
-                <div class="mb-4">
-                    <h5>Descrição do Relatório Selecionado</h5>
-                    <p id="descricao-completa" class="text-muted fst-italic bg-light p-3 rounded border">
-                        Selecione um tipo de relatório para visualizar a descrição completa.
-                    </p>
-                </div>
-
-                <!-- Botão -->
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-file-pdf me-2"></i>Gerar Relatório
-                </button>
-            </form>
-        </div>
-
-        <!-- Painel de Informações (opcional) -->
-        <div class="col-md-4 col-lg-5">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold">Precisa de ajuda?</h5>
-                    <p class="card-text text-muted">
-                        Escolha o tipo de relatório, defina o período desejado e clique em "Gerar Relatório".
-                        Você pode usar esse documento para acompanhar notas fiscais ou compartilhar dados com sua equipe.
-                    </p>
-                    <ul class="list-group list-group-flush mt-3">
-                        <li class="list-group-item d-flex align-items-center">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            <small>Todos os campos são obrigatórios.</small>
-                        </li>
-                        <li class="list-group-item d-flex align-items-center">
-                            <i class="fas fa-info-circle text-primary me-2"></i>
-                            <small>Dados filtrados conforme período selecionado.</small>
-                        </li>
-                    </ul>
-                </div>
+    <!--begin::Toolbar-->
+    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+        <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                <h1 class="page-heading text-gray-900 fw-bold fs-3 my-0">Solicitação de Relatórios</h1>
+                <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                    <li class="breadcrumb-item text-muted"><a href="#" class="text-hover-primary">Home</a></li>
+                    <li class="breadcrumb-item">
+                        <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                    </li>
+                    <li class="breadcrumb-item text-muted">Relatórios</li>
+                </ul>
             </div>
         </div>
     </div>
+    <!--end::Toolbar-->
+
+    <!--begin::Content-->
+    <div id="kt_app_content" class="app-content flex-column-fluid">
+        <div class="app-container container-fluid">
+
+            <div class="row justify-content-center">
+                <!-- Formulário -->
+                <div class="col-lg-8 mb-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-file-alt me-2 text-primary"></i>Gerar Relatório</h3>
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                {% csrf_token %}
+
+                                <!-- Tipo de Relatório -->
+                                <div class="mb-4">
+                                    <label for="tipo_relatorio" class="form-label fw-bold">Tipo de Relatório</label>
+                                    <select id="tipo_relatorio" name="tipo_relatorio" class="form-select" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="geral">Relatório Geral</option>
+                                        <option value="pendentes">Notas Pendentes</option>
+                                        <option value="empresa">Notas por Empresa</option>
+                                        <option value="estatisticas">Estatísticas Mensais</option>
+                                        <option value="erros">Histórico de Erros</option>
+                                    </select>
+                                    <div class="form-text">Escolha o tipo de relatório que deseja gerar.</div>
+                                </div>
+
+                                <!-- Datas -->
+                                <div class="row g-4 mb-4">
+                                    <div class="col-md-6">
+                                        <label for="data_inicio" class="form-label fw-bold">Data Inicial</label>
+                                        <input type="date" id="data_inicio" name="data_inicio" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="data_fim" class="form-label fw-bold">Data Final</label>
+                                        <input type="date" id="data_fim" name="data_fim" class="form-control" required>
+                                    </div>
+                                </div>
+
+                                <!-- Descrição Dinâmica -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Descrição do Relatório Selecionado</label>
+                                    <div id="descricao-completa" class="text-muted bg-light p-3 rounded border fst-italic">
+                                        Selecione um tipo de relatório para visualizar a descrição completa.
+                                    </div>
+                                </div>
+
+                                <!-- Botão -->
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-file-pdf me-2"></i> Gerar Relatório
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Painel de ajuda -->
+                <div class="col-lg-4 mb-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-3">Precisa de ajuda?</h5>
+                            <p class="text-muted">
+                                Escolha o tipo de relatório, defina o período desejado e clique em <strong>"Gerar Relatório"</strong>. 
+                                Você pode usá-lo para análises internas ou comunicação com a equipe.
+                            </p>
+                            <ul class="list-group list-group-flush mt-3">
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <small>Todos os campos são obrigatórios.</small>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="fas fa-info-circle text-primary me-2"></i>
+                                    <small>Dados filtrados conforme período selecionado.</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!--end::Content-->
+
 </div>
 
 <!-- Script para descrição dinâmica -->

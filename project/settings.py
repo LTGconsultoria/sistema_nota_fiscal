@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-^0e#i4u2re+yu&3#x@k1bxxd@ezkpu48q!ggvljtp=xh5aq9f!'
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'ltgconsultoriadeinformatica.cloud',

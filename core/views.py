@@ -284,3 +284,50 @@ def upload_arquivo_ftp(request):
 def logout_view(request):
     auth_logout(request)
     return redirect('login')
+
+import io
+from django.shortcuts import render
+from ftplib import FTP
+from django.contrib.auth.decorators import login_required
+import pytesseract
+from pdf2image import convert_from_bytes
+
+@login_required
+def analisar_pdf_ftp(request):
+    caminho_arquivo = request.GET.get('arquivo')
+
+    if not caminho_arquivo:
+        return HttpResponse("Caminho do arquivo não informado.", status=400)
+
+    host = "6f38071ad3d5.sn.mynetname.net"
+    usuario = "sdr.lucas.marins"
+    senha = "sdr.lucas.marins@ftp"
+
+    buffer = io.BytesIO()
+
+    try:
+        with FTP() as ftp:
+            ftp.connect(host, 9921)
+            ftp.login(usuario, senha)
+            ftp.retrbinary(f'RETR {caminho_arquivo}', buffer.write)
+
+        buffer.seek(0)
+
+        # Converte PDF escaneado em imagens
+        imagens = convert_from_bytes(buffer.getvalue())
+
+        # Aplica OCR em cada imagem
+        texto_extraido = ''
+        for img in imagens:
+            texto_extraido += pytesseract.image_to_string(img, lang='por')  # OCR em português
+
+        status_previsto = "OK" if "Nota Fiscal" in texto_extraido else "Suspeito"
+
+        return render(request, 'ia_resultado.html', {
+            'arquivo': caminho_arquivo,
+            'status_previsto': status_previsto,
+            'texto': texto_extraido[:3000]  # Exibe os primeiros 3000 caracteres
+        })
+
+    except Exception as e:
+        return HttpResponse(f"Erro ao processar PDF com OCR: {e}", content_type='text/plain')

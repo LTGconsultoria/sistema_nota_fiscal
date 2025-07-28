@@ -17,5 +17,8 @@ urlpatterns = [
     path('relatorios/por_empresa/<str:data_inicio>/<str:data_fim>/', views.relatorio_empresa_view, name='relatorio_empresa'),
     path('relatorios/estatisticas/<str:data_inicio>/<str:data_fim>/', views.relatorio_estatisticas_view, name='relatorio_estatisticas'),
     path('relatorios/erros/<str:data_inicio>/<str:data_fim>/', views.relatorio_erros_view, name='relatorio_erros'),
-    
+    path('ftp/analisar_ia/', views.analisar_pdf_ftp, name='analisar_pdf_ftp'),
+
+
+
 ]

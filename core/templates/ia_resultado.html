@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Resultado da Análise IA{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+    <h2 class="mb-3">Análise de PDF com IA</h2>
+    <p><strong>Arquivo:</strong> {{ arquivo }}</p>
+    <p><strong>Status previsto:</strong> <span class="badge bg-success">{{ status_previsto }}</span></p>
+
+    <hr>
+    <h5>Texto extraído:</h5>
+    <pre style="background: #f8f9fa; padding: 1rem; border: 1px solid #ccc;">{{ texto }}</pre>
+
+    <a href="{% url 'lista_pdfs_ftp' %}?path={{ arquivo|cut:arquivo|cut:"/" }}" class="btn btn-secondary mt-3">Voltar</a>
+</div>
+
+{% endblock %}

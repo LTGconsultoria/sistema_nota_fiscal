@@ -205,6 +205,25 @@ def abrir_arquivo_ftp(request, arquivo):
 
 
 # === OCR e IA ===
+def validar_chave_acesso(chave):
+    """
+    Verifica se a chave de acesso tem 44 dígitos e se o dígito verificador está correto.
+    """
+    if not chave.isdigit() or len(chave) != 44:
+        return False
+
+    corpo = chave[:43]
+    dv_real = int(chave[-1])
+
+    pesos = list(range(2, 10)) * 5  # 43 posições
+    pesos = pesos[:43][::-1]
+
+    soma = sum(int(digito) * peso for digito, peso in zip(corpo, pesos))
+    resto = soma % 11
+    dv_calculado = 11 - resto if resto >= 2 else 0
+
+    return dv_calculado == dv_real
+
 
 def extrair_dados_nota(texto):
     dados = {}
@@ -238,7 +257,7 @@ def extrair_dados_nota(texto):
             if padrao in linha:
                 numeros = re.findall(r'\d', linha)
                 chave = ''.join(numeros)
-                if len(chave) == 44:
+                if len(chave) == 44 and validar_chave_acesso(chave):
                     dados['chave_acesso'] = chave
                     break
         if 'chave_acesso' in dados:
@@ -300,3 +319,4 @@ def analisar_pdf_ftp(request):
 
     except Exception as e:
         return HttpResponse(f"Erro ao processar PDF com OCR: {e}", content_type='text/plain')
+

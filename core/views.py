@@ -294,6 +294,17 @@ from django.contrib.auth.decorators import login_required
 import pytesseract
 from pdf2image import convert_from_bytes
 
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from ftplib import FTP
+from pdf2image import convert_from_bytes
+from PIL import ImageOps
+import pytesseract
+import io
+import os
+
+
 @login_required
 def analisar_pdf_ftp(request):
     caminho_arquivo = request.GET.get('arquivo')
@@ -315,20 +326,25 @@ def analisar_pdf_ftp(request):
 
         buffer.seek(0)
 
-        # Converte PDF escaneado em imagens
-        imagens = convert_from_bytes(buffer.getvalue())
+        # === Configuração de ambiente do Tesseract ===
+        os.environ['TESSDATA_PREFIX'] = '/usr/share/tesseract-ocr/5/tessdata'
 
-        # Aplica OCR em cada imagem
+        # Converte PDF em imagens (DPI mais alto melhora OCR)
+        imagens = convert_from_bytes(buffer.getvalue(), dpi=300)
+
         texto_extraido = ''
-        for img in imagens:
-            texto_extraido += pytesseract.image_to_string(img, lang='por')  # OCR em português
+        for img in imagens[:2]:  # Limita a 2 páginas para performance
+            img = ImageOps.autocontrast(img)
+            img = img.convert('L')  # Escala de cinza
+            img = img.point(lambda x: 0 if x < 140 else 255, '1')  # Binarização
+            texto_extraido += pytesseract.image_to_string(img, lang='por', config='--psm 6')
 
         status_previsto = "OK" if "Nota Fiscal" in texto_extraido else "Suspeito"
 
         return render(request, 'ia_resultado.html', {
             'arquivo': caminho_arquivo,
             'status_previsto': status_previsto,
-            'texto': texto_extraido[:3000]  # Exibe os primeiros 3000 caracteres
+            'texto': texto_extraido[:3000]
         })
 
     except Exception as e:

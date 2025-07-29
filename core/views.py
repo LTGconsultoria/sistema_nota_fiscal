@@ -6,6 +6,8 @@ import ftplib
 import io
 from ftplib import FTP, error_perm
 from django.contrib import messages
+import os
+os.environ['TESSDATA_PREFIX'] = '/usr/share/tesseract-ocr/5/tessdata'
 
 # === Views de Login e Dashboard ===
 

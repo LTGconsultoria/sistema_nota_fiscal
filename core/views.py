@@ -209,25 +209,56 @@ def abrir_arquivo_ftp(request, arquivo):
 def extrair_dados_nota(texto):
     dados = {}
 
+    # CNPJ
     cnpj_match = re.search(r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}', texto)
     if cnpj_match:
         dados['cnpj'] = cnpj_match.group()
 
+    # Data de emissão
     data_match = re.search(r'\d{2}/\d{2}/\d{4}', texto)
     if data_match:
         dados['data_emissao'] = data_match.group()
 
-    chave_match = re.search(r'(\d[\d\s]{40,})', texto)
-    if chave_match:
-        chave_limpa = re.sub(r'\D', '', chave_match.group())
-        if len(chave_limpa) == 44:
-            dados['chave_acesso'] = chave_limpa
+    # Padrões de texto que indicam a presença da chave
+    PADROES_CHAVE = [
+        "chave de acesso",
+        "chave de acesso da nota",
+        "chave de acesso da nf-e",
+        "chave de acesso da nota fiscal eletrônica",
+        "acesso da nf-e",
+        "número de acesso",
+        "nf-e:",
+        "consulta de autenticidade no portal",
+    ]
 
+    # Busca linha a linha para maior precisão
+    linhas = texto.lower().splitlines()
+    for linha in linhas:
+        for padrao in PADROES_CHAVE:
+            if padrao in linha:
+                numeros = re.findall(r'\d', linha)
+                chave = ''.join(numeros)
+                if len(chave) == 44:
+                    dados['chave_acesso'] = chave
+                    break
+        if 'chave_acesso' in dados:
+            break
+
+    # Fallback: busca geral se não achou com contexto
+    if 'chave_acesso' not in dados:
+        chave_match = re.search(r'(\d[\d\s]{40,})', texto)
+        if chave_match:
+            chave_limpa = re.sub(r'\D', '', chave_match.group())
+            if len(chave_limpa) == 44:
+                dados['chave_acesso'] = chave_limpa
+
+    # Valor total (último valor no formato 0.000,00)
     valor_match = re.findall(r'\d{1,3}(?:\.\d{3})*,\d{2}', texto)
     if valor_match:
         dados['valor_total'] = valor_match[-1]
 
     return dados
+
 
 
 @login_required

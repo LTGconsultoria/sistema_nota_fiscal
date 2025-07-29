@@ -287,12 +287,6 @@ def logout_view(request):
     auth_logout(request)
     return redirect('login')
 
-import io
-from django.shortcuts import render
-from ftplib import FTP
-from django.contrib.auth.decorators import login_required
-import pytesseract
-from pdf2image import convert_from_bytes
 
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -301,8 +295,36 @@ from ftplib import FTP
 from pdf2image import convert_from_bytes
 from PIL import ImageOps
 import pytesseract
-import io
 import os
+import io
+import re
+
+def extrair_dados_nota(texto):
+    dados = {}
+
+    # CNPJ
+    cnpj_match = re.search(r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}', texto)
+    if cnpj_match:
+        dados['cnpj'] = cnpj_match.group()
+
+    # Data de emissão
+    data_match = re.search(r'\d{2}/\d{2}/\d{4}', texto)
+    if data_match:
+        dados['data_emissao'] = data_match.group()
+
+    # Chave de acesso
+    chave_match = re.search(r'(\d[\d\s]{40,})', texto)
+    if chave_match:
+        chave_limpa = re.sub(r'\D', '', chave_match.group())
+        if len(chave_limpa) == 44:
+            dados['chave_acesso'] = chave_limpa
+
+    # Valor total
+    valor_match = re.findall(r'\d{1,3}(?:\.\d{3})*,\d{2}', texto)
+    if valor_match:
+        dados['valor_total'] = valor_match[-1]
+
+    return dados
 
 
 @login_required
@@ -326,25 +348,26 @@ def analisar_pdf_ftp(request):
 
         buffer.seek(0)
 
-        # === Configuração de ambiente do Tesseract ===
         os.environ['TESSDATA_PREFIX'] = '/usr/share/tesseract-ocr/5/tessdata'
-
-        # Converte PDF em imagens (DPI mais alto melhora OCR)
         imagens = convert_from_bytes(buffer.getvalue(), dpi=300)
 
         texto_extraido = ''
-        for img in imagens[:2]:  # Limita a 2 páginas para performance
+        for img in imagens[:2]:  # processa até 2 páginas
             img = ImageOps.autocontrast(img)
-            img = img.convert('L')  # Escala de cinza
-            img = img.point(lambda x: 0 if x < 140 else 255, '1')  # Binarização
+            img = img.convert('L')
+            img = img.point(lambda x: 0 if x < 140 else 255, '1')
             texto_extraido += pytesseract.image_to_string(img, lang='por', config='--psm 6')
 
         status_previsto = "OK" if "Nota Fiscal" in texto_extraido else "Suspeito"
 
+        # 🆕 Extrai campos úteis da nota
+        dados_extraidos = extrair_dados_nota(texto_extraido)
+
         return render(request, 'ia_resultado.html', {
             'arquivo': caminho_arquivo,
             'status_previsto': status_previsto,
-            'texto': texto_extraido[:3000]
+            'texto': texto_extraido[:3000],
+            'dados': dados_extraidos
         })
 
     except Exception as e:

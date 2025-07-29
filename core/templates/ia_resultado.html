@@ -3,15 +3,49 @@
 {% block content %}
 
 <div class="container py-4">
-    <h2 class="mb-3">Análise de PDF com IA</h2>
-    <p><strong>Arquivo:</strong> {{ arquivo }}</p>
-    <p><strong>Status previsto:</strong> <span class="badge bg-success">{{ status_previsto }}</span></p>
+    <div class="mb-4">
+        <h2 class="fw-bold text-dark">Resultado da Análise OCR</h2>
+        <p><i class="fas fa-file-alt me-1 text-secondary"></i><strong>Arquivo analisado:</strong> {{ arquivo }}</p>
+
+        <p>
+            <strong>Status previsto:</strong>
+            {% if status_previsto == "OK" %}
+                <span class="badge bg-success">OK</span>
+            {% else %}
+                <span class="badge bg-warning text-dark">Suspeito</span>
+            {% endif %}
+        </p>
+    </div>
 
     <hr>
-    <h5>Texto extraído:</h5>
-    <pre style="background: #f8f9fa; padding: 1rem; border: 1px solid #ccc;">{{ texto }}</pre>
 
-    <a href="{% url 'lista_pdfs_ftp' %}?path={{ arquivo|cut:arquivo|cut:"/" }}" class="btn btn-secondary mt-3">Voltar</a>
+    <div class="mb-4">
+        <h4 class="text-primary"><i class="fas fa-info-circle me-1"></i>Dados Extraídos da Nota</h4>
+        {% if dados %}
+        <ul class="list-group">
+            {% if dados.cnpj %}
+                <li class="list-group-item"><i class="fas fa-id-card me-2 text-muted"></i><strong>CNPJ:</strong> {{ dados.cnpj }}</li>
+            {% endif %}
+            {% if dados.data_emissao %}
+                <li class="list-group-item"><i class="fas fa-calendar-alt me-2 text-muted"></i><strong>Data de Emissão:</strong> {{ dados.data_emissao }}</li>
+            {% endif %}
+            {% if dados.chave_acesso %}
+                <li class="list-group-item"><i class="fas fa-key me-2 text-muted"></i><strong>Chave de Acesso:</strong> {{ dados.chave_acesso }}</li>
+            {% endif %}
+            {% if dados.valor_total %}
+                <li class="list-group-item"><i class="fas fa-money-bill-wave me-2 text-muted"></i><strong>Valor Total:</strong> R$ {{ dados.valor_total }}</li>
+            {% endif %}
+        </ul>
+        {% else %}
+            <p class="text-muted fst-italic">Nenhum dado estruturado foi extraído automaticamente.</p>
+        {% endif %}
+    </div>
+
+    <div class="text-end">
+        <a href="{% url 'lista_pdfs_ftp' %}?path={{ arquivo|cut:arquivo|cut:'/' }}" class="btn btn-outline-secondary">
+            <i class="fas fa-folder-open me-1"></i>Voltar para pasta
+        </a>
+    </div>
 </div>
 
 {% endblock %}

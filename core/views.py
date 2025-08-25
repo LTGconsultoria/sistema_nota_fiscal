@@ -84,19 +84,22 @@ def relatorio_erros_view(request, data_inicio, data_fim):
     return _render_relatorio(request, 'relatorio_erros.html', data_inicio, data_fim)
 
 
-# === FTP - Lista e Upload ===
+# === FTP - Lista e Upload ===#
 
 @login_required
 def lista_pdfs_ftp(request):
-    DEFAULT_PATH = '/00-JSG-FTP (GERAL)/'
+    DEFAULT_PATH = '/'  # <-- ajustado para iniciar na raiz
     current_path = request.GET.get('path', DEFAULT_PATH).strip()
 
+    # Bloqueia tentativa de subir diretórios acima da raiz
     if '..' in current_path or current_path.startswith('/..'):
         return HttpResponse("Acesso negado.", status=403)
 
+    # Garante que o caminho termine com barra
     if not current_path.endswith('/'):
         current_path += '/'
 
+    # Se não veio path na URL, redireciona adicionando o path padrão
     if request.GET.get('path') is None:
         return redirect(f"{request.path}?path={DEFAULT_PATH}")
 
@@ -104,11 +107,23 @@ def lista_pdfs_ftp(request):
     usuario = "sdr.lucas.marins"
     senha = "sdr.lucas.marins@ftp"
 
-    directories, files, error = [], [], None
+    directories = []
+    files = []
+    error = None
+
     MES_POR_EXTENSO = {
-        "Jan": "janeiro", "Feb": "fevereiro", "Mar": "março", "Apr": "abril",
-        "May": "maio", "Jun": "junho", "Jul": "julho", "Aug": "agosto",
-        "Sep": "setembro", "Oct": "outubro", "Nov": "novembro", "Dec": "dezembro"
+        "Jan": "janeiro",
+        "Feb": "fevereiro",
+        "Mar": "março",
+        "Apr": "abril",
+        "May": "maio",
+        "Jun": "junho",
+        "Jul": "julho",
+        "Aug": "agosto",
+        "Sep": "setembro",
+        "Oct": "outubro",
+        "Nov": "novembro",
+        "Dec": "dezembro"
     }
 
     try:
@@ -117,21 +132,47 @@ def lista_pdfs_ftp(request):
             ftp.login(usuario, senha)
             ftp.cwd(current_path)
 
-            entries = [entry for entry in ftp.mlsd() if entry[0] not in ('.', '..')]
+            entries = []
 
-            for name, facts in entries:
-                tipo = facts['type']
-                modified = facts.get('modify', 'sem-data')
-                if tipo == 'dir':
-                    directories.append(name)
-                elif tipo == 'file':
+            # Lista com MLSD e armazena resultados
+            for name, facts in ftp.mlsd():
+                if name in ('.', '..'):
+                    continue
+                entries.append({
+                    'name': name,
+                    'type': facts['type'],
+                    'modified': facts.get('modify', 'sem-data'),
+                    'size': facts.get('size', '0')
+                })
+
+            # Log no console (opcional)
+            print("\n" + "=" * 60)
+            print(f"Conteúdo do diretório: {current_path}")
+            print("-" * 60)
+            for item in entries:
+                tipo = "📁 Pasta" if item['type'] == 'dir' else "📄 Arquivo"
+                print(f"{tipo}: {item['name']} | Modificado: {item['modified']}")
+            print("=" * 60 + "\n")
+
+            # Separa pastas e arquivos + formata data
+            for item in entries:
+                if item['type'] == 'dir':
+                    directories.append(item['name'])
+                elif item['type'] == 'file':
+                    modified = item['modified']
                     try:
                         dt = datetime.strptime(modified, "%Y%m%d%H%M%S")
-                        mes = MES_POR_EXTENSO.get(dt.strftime("%b").capitalize(), dt.strftime("%b"))
-                        modified = f"{dt.day} de {mes} de {dt.year}"
+                        mes_abreviado = dt.strftime("%b").capitalize()
+                        mes_extenso = MES_POR_EXTENSO.get(mes_abreviado, mes_abreviado)
+                        modified = f"{dt.day} de {mes_extenso} de {dt.year}"
                     except Exception:
                         modified = "Desconhecida"
-                    files.append({'name': name, 'modified': modified})
+
+                    files.append({
+                        'name': item['name'],
+                        'modified': modified
+                    })
+
     except Exception as e:
         error = f"Erro ao acessar o FTP: {str(e)}"
 
@@ -145,7 +186,7 @@ def lista_pdfs_ftp(request):
 
 @login_required
 def upload_arquivo_ftp(request):
-    current_path = request.GET.get('path', '/00-JSG-FTP (GERAL)/').strip()
+    current_path = request.GET.get('path', '/').strip()
     centro_custo = request.POST.get('centro_custo', '')
     descricao = request.POST.get('descricao', '')
 

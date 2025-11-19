@@ -110,6 +110,14 @@ def lista_pdfs_ftp(request):
     directories = []
     files = []
     error = None
+    parent_path = '/'
+    try:
+        if current_path not in ('/', ''):
+            tmp = current_path[:-1] if current_path.endswith('/') else current_path
+            idx = tmp.rfind('/')
+            parent_path = tmp[:idx+1] if idx != -1 else '/'
+    except Exception:
+        parent_path = '/'
 
     MES_POR_EXTENSO = {
         "Jan": "janeiro",
@@ -181,6 +189,7 @@ def lista_pdfs_ftp(request):
         'directories': directories,
         'files': files,
         'error': error,
+        'parent_path': parent_path,
     })
 
 
@@ -360,4 +369,60 @@ def analisar_pdf_ftp(request):
 
     except Exception as e:
         return HttpResponse(f"Erro ao processar PDF com OCR: {e}", content_type='text/plain')
+
+
+@login_required
+def analisar_todos_ftp(request):
+    diretorio = request.GET.get('path', '/').strip()
+    if not diretorio.endswith('/'):
+        diretorio += '/'
+    host = "6f38071ad3d5.sn.mynetname.net"
+    usuario = "sdr.lucas.marins"
+    senha = "sdr.lucas.marins@ftp"
+    saida = io.StringIO()
+    try:
+        with FTP() as ftp:
+            ftp.connect(host, 9921)
+            ftp.login(usuario, senha)
+            ftp.cwd(diretorio)
+            arquivos = []
+            try:
+                for name, facts in ftp.mlsd():
+                    if facts.get('type') == 'file' and name.lower().endswith('.pdf'):
+                        arquivos.append(name)
+            except Exception:
+                for name in ftp.nlst():
+                    if name.lower().endswith('.pdf'):
+                        arquivos.append(name)
+
+            for nome in arquivos:
+                buffer = io.BytesIO()
+                ftp.retrbinary(f'RETR {nome}', buffer.write)
+                buffer.seek(0)
+                try:
+                    imagens = convert_from_bytes(buffer.getvalue(), dpi=300)
+                    texto = ''
+                    for img in imagens[:2]:
+                        img = ImageOps.autocontrast(img)
+                        img = img.convert('L')
+                        img = img.point(lambda x: 0 if x < 140 else 255, '1')
+                        texto += pytesseract.image_to_string(img, lang='por', config='--psm 6')
+                    status = "OK" if "Nota Fiscal" in texto else "Suspeito"
+                    dados = extrair_dados_nota(texto)
+                    linha = (
+                        f"arquivo={nome} | status={status}"
+                        f" | cnpj={dados.get('cnpj','')} | data={dados.get('data_emissao','')}"
+                        f" | valor={dados.get('valor_total','')} | chave={dados.get('chave_acesso','')}\n"
+                    )
+                    saida.write(linha)
+                except Exception as e:
+                    saida.write(f"arquivo={nome} | erro={str(e)}\n")
+    except Exception as e:
+        return HttpResponse(f"Erro ao processar pasta: {e}", content_type='text/plain')
+
+    conteudo = saida.getvalue()
+    nome = diretorio.strip('/').replace('/', '_') or 'raiz'
+    response = HttpResponse(conteudo, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="analise_{nome}.txt"'
+    return response
 

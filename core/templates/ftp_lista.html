@@ -42,6 +42,17 @@
                 <div class="card card-flush">
                     <div class="card-body py-4">
                         <p class="mb-0"><strong>Caminho Atual:</strong> {{ current_path }}</p>
+                        <div class="d-flex align-items-center gap-2 mt-3">
+                            <button type="button" class="btn btn-light btn-sm" onclick="history.back()">
+                                <i class="fas fa-arrow-left me-1"></i> Voltar
+                            </button>
+                            <button type="button" class="btn btn-light btn-sm" onclick="history.forward()">
+                                <i class="fas fa-arrow-right me-1"></i> Avançar
+                            </button>
+                            <a href="?path={{ parent_path }}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-level-up-alt me-1"></i> Subir nível
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -73,6 +84,11 @@
                 <div class="card card-flush">
                     <div class="card-header">
                         <h3 class="card-title">Arquivos</h3>
+                        <div class="card-toolbar">
+                            <a href="{% url 'analisar_todos_ftp' %}?path={{ current_path }}" class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-brain me-1"></i> Analisar IA (todos) e gerar TXT
+                            </a>
+                        </div>
                     </div>
                     <div class="card-body pt-0">
                         <table class="table table-hover align-middle">

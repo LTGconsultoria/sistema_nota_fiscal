@@ -18,6 +18,7 @@ urlpatterns = [
     path('relatorios/estatisticas/<str:data_inicio>/<str:data_fim>/', views.relatorio_estatisticas_view, name='relatorio_estatisticas'),
     path('relatorios/erros/<str:data_inicio>/<str:data_fim>/', views.relatorio_erros_view, name='relatorio_erros'),
     path('ftp/analisar_ia/', views.analisar_pdf_ftp, name='analisar_pdf_ftp'),
+    path('ftp/analisar_todos/', views.analisar_todos_ftp, name='analisar_todos_ftp'),
 
 
 

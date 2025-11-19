@@ -1,0 +1,104 @@
+/* Editar Chamado */
+
+#editarChamadoEmail {
+    left: -80px;
+    position: relative;
+}
+
+#editarChamadoEmailDiv {
+    left: -96px;
+}
+
+#editarChamadoInputEmail {
+    width: 378px;
+}
+
+#editarChamadoInputData {
+    width: 380px;
+}
+
+#editarChamadoTelefoneDiv {
+    left: -15px;
+}
+
+#editarChamadoSolicitanteDiv {
+    left: -15px;
+}
+
+#editarChamadoResponsavelLabel {
+    left: -80px;
+    position: relative;
+}
+
+#editarChamadoResponsavelDiv {
+    left: -96px;
+}
+
+#editarChamadoDataLabel {
+    right: 165px;
+    position: relative;
+}
+
+#editarChamadoDataDiv {
+    right: 180px;
+}
+
+#LinkGap {
+    gap: 10px;
+}
+
+/* Listar Chamado */
+
+#listarChamadoCardAberto {
+    width: 190px;
+    height: 60px;
+}
+
+#listarChamadoCardH5 {
+    position: relative;
+    text-align-last: center;
+}
+
+#cardDiv {
+    display: flex;
+    gap: 10px;
+}
+
+
+/* SLA circle color */
+
+.slaGreen-color {
+    color:green;
+}
+
+.slaYellow-color {
+    color:yellow;
+}
+
+.slaOrange-color {
+    color:orange;
+}
+    
+.slaRed-color {
+    color:red;
+}    
+
+.slaBlue-color {
+    color:blue;
+}
+ 
+
+ 
+.slaTeal-color {
+    color:teal;
+}
+
+.slaGray-color {
+    color:gray;
+}
+ 
+
+.placeholderBlack {
+    color: black;
+}
+

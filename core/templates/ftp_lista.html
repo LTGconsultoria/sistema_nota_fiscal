@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Arquivos FTP - LTG Consultoria{% endblock %}
+{% block content %}
+
+<div class="d-flex flex-column flex-column-fluid">
+    <!--begin::Toolbar-->
+    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+        <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+                    Explorador de Arquivos FTP
+                </h1>
+                <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                    <li class="breadcrumb-item text-muted">
+                        <a href="#" class="text-muted text-hover-primary">Home</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                    </li>
+                    <li class="breadcrumb-item text-muted">FTP</li>
+                </ul>
+            </div>
+            <div class="d-flex align-items-center gap-2 gap-lg-3">
+                <a href="{% url 'upload_arquivo_ftp' %}?path={{ current_path }}" class="btn btn-success btn-sm">
+                    <i class="fas fa-upload me-1"></i> Fazer Upload
+                </a>
+            </div>
+        </div>
+    </div>
+    <!--end::Toolbar-->
+
+    <!--begin::Content-->
+    <div id="kt_app_content" class="app-content flex-column-fluid">
+        <div id="kt_app_content_container" class="app-container container-fluid">
+
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+
+            <!-- Caminho Atual -->
+            <div class="mb-5">
+                <div class="card card-flush">
+                    <div class="card-body py-4">
+                        <p class="mb-0"><strong>Caminho Atual:</strong> {{ current_path }}</p>
+                        <div class="d-flex align-items-center gap-2 mt-3">
+                            <button type="button" class="btn btn-light btn-sm" onclick="history.back()">
+                                <i class="fas fa-arrow-left me-1"></i> Voltar
+                            </button>
+                            <button type="button" class="btn btn-light btn-sm" onclick="history.forward()">
+                                <i class="fas fa-arrow-right me-1"></i> Avançar
+                            </button>
+                            <a href="?path={{ parent_path }}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-level-up-alt me-1"></i> Subir nível
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pastas -->
+            <div class="mb-7">
+                <div class="card card-flush">
+                    <div class="card-header">
+                        <h3 class="card-title">Pastas</h3>
+                    </div>
+                    <div class="card-body d-flex flex-wrap gap-4">
+                        {% for directory in directories %}
+                            <div class="text-center">
+                                <a href="?path={{ current_path }}{{ directory }}/" class="text-decoration-none text-reset">
+                                    <i class="fas fa-folder text-warning mb-2" style="font-size: 36px;"></i>
+
+                                    <div class="fw-semibold">{{ directory }}</div>
+                                </a>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted">Sem pastas encontradas.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arquivos -->
+            <div class="mb-7">
+                <div class="card card-flush">
+                    <div class="card-header">
+                        <h3 class="card-title">Arquivos</h3>
+                        <div class="card-toolbar">
+                            <a href="{% url 'analisar_todos_ftp' %}?path={{ current_path }}" class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-brain me-1"></i> Analisar IA (todos) e gerar TXT
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light fw-bold">
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Data de Modificação</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for file in files %}
+                                <tr>
+                                    <td>
+                                        {% if file.name|lower|slice:"-4:" == ".pdf" %}
+                                            <i class="fas fa-file-pdf text-danger me-2"></i>
+                                        {% else %}
+                                            <i class="fas fa-file text-muted me-2"></i>
+                                        {% endif %}
+                                        {{ file.name }}
+                                    </td>
+                                    <td>{{ file.modified }}</td>
+                                    <td>
+                                        <a href="{% url 'abrir_arquivo_ftp' arquivo=current_path|add:file.name %}"
+                                           class="btn btn-sm btn-primary"
+                                           target="_blank">
+                                            {% if file.name|lower|slice:"-4:" == ".pdf" %}
+                                                Visualizar
+                                            {% else %}
+                                                Baixar
+                                            {% endif %}
+                                        </a>
+                                        <a href="{% url 'analisar_pdf_ftp' %}?arquivo={{ current_path }}{{ file.name }}"
+   class="btn btn-sm btn-outline-info">
+   <i class="fas fa-brain me-1"></i> Analisar IA
+</a>
+
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-muted">Sem arquivos encontrados.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voltar à Raiz -->
+            <div class="text-end">
+                <a href="?path=/" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-home me-1"></i> Voltar à raiz
+                </a>
+            </div>
+
+        </div>
+    </div>
+    <!--end::Content-->
+</div>
+
+{% endblock %}

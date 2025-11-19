@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}Relatório de Pendências - LTG Consultoria{% endblock %}
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- Título e período -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold">Relatório de Pendências</h2>
+            <p class="mb-1"><strong>Período:</strong> {{ data_inicio }} até {{ data_fim }}</p>
+            <p><strong>Total de Pendências:</strong> 27</p>
+        </div>
+    </div>
+
+    <!-- Resumo por tipo -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-danger text-white text-center">
+                <div class="card-body py-3">
+                    <h6>XML Inválido</h6>
+                    <div class="display-6 fw-bold">9</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark text-center">
+                <div class="card-body py-3">
+                    <h6>Chave Duplicada</h6>
+                    <div class="display-6 fw-bold">5</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-secondary text-white text-center">
+                <div class="card-body py-3">
+                    <h6>Assinatura Inválida</h6>
+                    <div class="display-6 fw-bold">7</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark text-white text-center">
+                <div class="card-body py-3">
+                    <h6>Outros Erros</h6>
+                    <div class="display-6 fw-bold">6</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Pendências Registradas</h5>
+            <span class="badge bg-danger">Últimas 72h</span>
+        </div>
+        <div class="card-body table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>Tipo</th>
+                        <th>Chave / Protocolo</th>
+                        <th>Motivo</th>
+                        <th>Arquivo</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2025-04-05 14:30</td>
+                        <td>NF-e</td>
+                        <td>52250412345678901234567890123456789012345678</td>
+                        <td>XML mal formado</td>
+                        <td>/notas/empresaA/nfe_1234.xml</td>
+                        <td><span class="badge bg-danger">Pendente</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1 btn-view" title="Visualizar">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success btn-resolve" title="Resolver">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2025-04-05 15:10</td>
+                        <td>CT-e</td>
+                        <td>52250498765432109876543210987654321098765432</td>
+                        <td>Chave duplicada</td>
+                        <td>/notas/empresaB/cte_789.xml</td>
+                        <td><span class="badge bg-warning text-dark">Em Análise</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1 btn-view" title="Visualizar">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success btn-resolve" title="Resolver">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2025-04-05 16:45</td>
+                        <td>MDF-e</td>
+                        <td>522504555666777000888999000111222333444555</td>
+                        <td>Assinatura inválida</td>
+                        <td>/notas/empresaC/mdfe_456.xml</td>
+                        <td><span class="badge bg-danger">Pendente</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1 btn-view" title="Visualizar">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success btn-resolve" title="Resolver">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Botões de Ação -->
+    <div class="row mt-4">
+        <div class="col-md-12 d-flex gap-2">
+            <a href="{% url 'pre_relatorio' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Voltar
+            </a>
+            <button class="btn btn-success" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Imprimir Relatório
+            </button>
+            <button class="btn btn-outline-primary">
+                <i class="fas fa-file-excel me-2"></i>Exportar Excel
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<!-- Estilos e animações -->
+<style>
+    .btn-view i {
+        transition: transform 0.3s ease;
+    }
+    .btn-view:hover i {
+        transform: rotate(15deg) scale(1.2);
+    }
+
+    .btn-resolve.clicked i {
+        animation: pulseCheck 0.6s ease;
+    }
+
+    @keyframes pulseCheck {
+        0%   { transform: scale(1); color: #198754; }
+        50%  { transform: scale(1.4); color: #28a745; }
+        100% { transform: scale(1); color: #198754; }
+    }
+</style>
+
+<!-- Script de animação no clique -->
+<script>
+    document.querySelectorAll('.btn-resolve').forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.classList.remove('clicked');
+            void btn.offsetWidth; // reflow for restart animation
+            btn.classList.add('clicked');
+        });
+    });
+</script>
+
+{% endblock %}

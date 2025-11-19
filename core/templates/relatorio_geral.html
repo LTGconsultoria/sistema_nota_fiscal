@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Relatório Geral - LTG Consultoria{% endblock %}
+{% block content %}
+
+<div class="d-flex flex-column flex-column-fluid">
+
+    <!--begin::Toolbar-->
+    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+        <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                <h1 class="page-heading text-gray-900 fw-bold fs-3 my-0">Relatório Geral de Processamento</h1>
+                <span class="text-muted fs-6 mt-1">Período: {{ data_inicio }} até {{ data_fim }}</span>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'pre_relatorio' %}" class="btn btn-light-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Voltar
+                </a>
+                <button class="btn btn-success" onclick="window.print()">
+                    <i class="fas fa-print me-2"></i>Imprimir
+                </button>
+            </div>
+        </div>
+    </div>
+    <!--end::Toolbar-->
+
+    <!--begin::Content-->
+    <div id="kt_app_content" class="app-content flex-column-fluid">
+        <div class="app-container container-fluid">
+
+            <!-- Indicadores -->
+            <div class="row g-4 mb-6">
+                <div class="col-md-3">
+                    <div class="card card-bordered bg-primary text-white">
+                        <div class="card-body text-center py-4">
+                            <h5 class="fw-semibold">Notas Lidas</h5>
+                            <div class="fs-1 fw-bold">1.230</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card card-bordered bg-success text-white">
+                        <div class="card-body text-center py-4">
+                            <h5 class="fw-semibold">Importadas</h5>
+                            <div class="fs-1 fw-bold">1.180</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card card-bordered bg-danger text-white">
+                        <div class="card-body text-center py-4">
+                            <h5 class="fw-semibold">Pendências</h5>
+                            <div class="fs-1 fw-bold">50</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card card-bordered bg-info text-white">
+                        <div class="card-body text-center py-4">
+                            <h5 class="fw-semibold">Taxa de Sucesso</h5>
+                            <div class="fs-1 fw-bold">96%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="row g-6 mb-6">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="card-title">Distribuição por Tipo de Nota</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="graficoTipos"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="card-title">Tendência Diária</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="graficoTendencia"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela -->
+            <div class="card shadow-sm mb-6">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title">Pendências Recentes</h5>
+                    <span class="badge bg-warning text-dark">Últimas 24h</span>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light fw-bold">
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Tipo</th>
+                                <th>Número</th>
+                                <th>Motivo</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2025-04-05 14:30</td>
+                                <td>NF-e</td>
+                                <td>123456789</td>
+                                <td>Chave inválida</td>
+                                <td><span class="badge bg-danger">Erro</span></td>
+                            </tr>
+                            <tr>
+                                <td>2025-04-05 15:10</td>
+                                <td>CT-e</td>
+                                <td>987654321</td>
+                                <td>Falta assinatura</td>
+                                <td><span class="badge bg-warning">Pendente</span></td>
+                            </tr>
+                            <tr>
+                                <td>2025-04-05 16:45</td>
+                                <td>MDF-e</td>
+                                <td>555666777</td>
+                                <td>XML mal formado</td>
+                                <td><span class="badge bg-danger">Erro</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!--end::Content-->
+
+</div>
+
+<!-- Scripts dos gráficos -->
+<script>
+    const ctxTipos = document.getElementById('graficoTipos').getContext('2d');
+    new Chart(ctxTipos, {
+        type: 'pie',
+        data: {
+            labels: ['NF-e', 'CT-e', 'MDF-e', 'Outros'],
+            datasets: [{
+                data: [800, 200, 100, 50],
+                backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#6c757d'],
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    const ctxTendencia = document.getElementById('graficoTendencia').getContext('2d');
+    new Chart(ctxTendencia, {
+        type: 'line',
+        data: {
+            labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+            datasets: [{
+                label: 'Notas Processadas',
+                data: [120, 140, 130, 160, 150, 80],
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}
+ 

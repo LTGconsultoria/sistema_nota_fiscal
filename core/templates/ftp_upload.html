@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Upload de Arquivo - LTG Consultoria{% endblock %}
+{% block content %}
+
+<div class="d-flex flex-column flex-column-fluid">
+
+    <!--begin::Toolbar-->
+    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+        <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+                    Upload de Arquivo
+                </h1>
+                <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                    <li class="breadcrumb-item text-muted">
+                        <a href="{% url 'lista_pdfs_ftp' %}" class="text-muted text-hover-primary">Arquivos FTP</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <span class="bullet bg-gray-500 w-5px h-2px"></span>
+                    </li>
+                    <li class="breadcrumb-item text-muted">Upload</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--end::Toolbar-->
+
+    <!--begin::Content-->
+    <div id="kt_app_content" class="app-content flex-column-fluid">
+        <div id="kt_app_content_container" class="app-container container-fluid">
+
+            <!-- Caminho Atual -->
+            <div class="mb-6">
+                <div class="card card-flush">
+                    <div class="card-body py-4">
+                        <p class="mb-0 fs-6"><strong>Caminho Atual:</strong> {{ current_path }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!--begin::Form Container-->
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-file-upload me-2 text-primary"></i> Enviar Novo Arquivo
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'upload_arquivo_ftp' %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="path" value="{{ current_path }}">
+
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label for="centro_custo" class="form-label">Centro de Custo</label>
+                                        <select name="centro_custo" id="centro_custo" class="form-select" required>
+                                            <option value="">Selecione...</option>
+                                            {% for centro in centros_ficticios %}
+                                                <option value="{{ centro }}" {% if centro == centro_custo %}selected{% endif %}>
+                                                    {{ centro }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="descricao" class="form-label">Descrição (opcional)</label>
+                                        <input type="text" name="descricao" id="descricao" class="form-control"
+                                               placeholder="Ex: Nota fiscal de junho" value="{{ descricao }}">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="arquivo" class="form-label">Escolha o Arquivo</label>
+                                    <input type="file" name="arquivo" id="arquivo" class="form-control" required>
+                                </div>
+
+                                <div class="d-flex justify-content-between">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-upload me-1"></i> Enviar Arquivo
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Form Container-->
+
+        </div>
+    </div>
+    <!--end::Content-->
+</div>
+
+{% endblock %}

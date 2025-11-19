@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Histórico de Erros - LTG Consultoria{% endblock %}
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- Título -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold">Histórico de Erros</h2>
+            <p><strong>Período:</strong> {{ data_inicio }} até {{ data_fim }}</p>
+        </div>
+    </div>
+
+    <!-- Cards de Resumo -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-danger text-white text-center">
+                <div class="card-body">
+                    <h6 class="text-uppercase fw-bold">PDF com Erro</h6>
+                    <div class="display-6 fw-bold">12</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark text-center">
+                <div class="card-body">
+                    <h6 class="text-uppercase fw-bold">Leitura Falha (OCR)</h6>
+                    <div class="display-6 fw-bold">7</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-secondary text-white text-center">
+                <div class="card-body">
+                    <h6 class="text-uppercase fw-bold">Notas com Erro Fiscal</h6>
+                    <div class="display-6 fw-bold">19</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white text-center">
+                <div class="card-body">
+                    <h6 class="text-uppercase fw-bold">Falhas no ERP</h6>
+                    <div class="display-6 fw-bold">5</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Erros Detalhados -->
+    <div class="card mb-4 border shadow-sm">
+        <div class="card-body">
+            <h6 class="fw-bold fs-6 text-dark border-bottom pb-2 mb-3">Detalhamento de Ocorrências</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Tipo de Erro</th>
+                            <th>Nota / PDF</th>
+                            <th>Mensagem</th>
+                            <th>Status</th>
+                            <th>Responsável</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-07-18 09:23</td>
+                            <td>Erro PDF</td>
+                            <td>entrada_123.pdf</td>
+                            <td>Arquivo corrompido</td>
+                            <td><span class="badge bg-danger">Pendente</span></td>
+                            <td>Bot</td>
+                            <td><button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>2025-07-18 10:44</td>
+                            <td>OCR</td>
+                            <td>entrada_124.pdf</td>
+                            <td>CNPJ ilegível</td>
+                            <td><span class="badge bg-warning text-dark">Em análise</span></td>
+                            <td>Equipe Fiscal</td>
+                            <td><button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>2025-07-18 11:07</td>
+                            <td>ERP</td>
+                            <td>NF-e 987654321</td>
+                            <td>Erro ao integrar com Protheus</td>
+                            <td><span class="badge bg-secondary">Falha</span></td>
+                            <td>Bot</td>
+                            <td><button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>2025-07-18 13:02</td>
+                            <td>Fiscal</td>
+                            <td>NF-e 123456789</td>
+                            <td>Chave duplicada</td>
+                            <td><span class="badge bg-danger">Pendente</span></td>
+                            <td>Equipe Fiscal</td>
+                            <td><button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botões -->
+    <div class="d-flex justify-content-start gap-3 mt-4">
+        <a href="{% url 'pre_relatorio' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Voltar
+        </a>
+        <button class="btn btn-success" onclick="window.print()">
+            <i class="fas fa-print me-2"></i>Imprimir
+        </button>
+        <button class="btn btn-outline-primary">
+            <i class="fas fa-file-excel me-2"></i>Exportar Excel
+        </button>
+    </div>
+
+</div>
+
+{% endblock %}

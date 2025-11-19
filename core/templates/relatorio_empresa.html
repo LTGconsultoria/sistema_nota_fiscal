@@ -1,0 +1,259 @@
+<!-- templates/relatorio_comparativo_empresas.html -->
+{% extends "base.html" %}
+{% block title %}Relatório Comparativo - LTG Consultoria{% endblock %}
+{% block content %}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2>Relatório Comparativo entre Empresas</h2>
+            <p><strong>Período:</strong> 01/04/2025 até 07/04/2025</p>
+        </div>
+    </div>
+
+    <!-- Indicadores Gerais -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h6 class="card-title">Empresas Avaliadas</h6>
+                    <p class="card-text display-6">5</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h6 class="card-title">Total de Notas</h6>
+                    <p class="card-text display-6">890</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h6 class="card-title">Pendências Totais</h6>
+                    <p class="card-text display-6">78</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h6 class="card-title">Taxa Média de Sucesso</h6>
+                    <p class="card-text display-6">91%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards com 2 colunas: Gráficos e Motivos -->
+    <div class="row g-4 mb-4">
+        <!-- Gráfico Taxa de Sucesso -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5>Taxa de Sucesso por Empresa</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoTaxaSucesso"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparativo Tabela -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5>Motivos de Erro por Empresa</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            XML mal formado
+                            <span class="badge bg-danger rounded-pill">22</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Chave duplicada
+                            <span class="badge bg-danger rounded-pill">18</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Assinatura inválida
+                            <span class="badge bg-danger rounded-pill">20</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Outros erros
+                            <span class="badge bg-secondary rounded-pill">18</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela Comparativa -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5>Comparativo entre Empresas</h5>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Empresa</th>
+                                <th>CNPJ</th>
+                                <th>Total de Notas</th>
+                                <th>Importadas</th>
+                                <th>Pendências</th>
+                                <th>Taxa de Sucesso</th>
+                                <th>Valor Total (R$)</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>LTG Consultoria de TI Ltda.</td>
+                                <td>12.345.678/0001-99</td>
+                                <td>185</td>
+                                <td>170</td>
+                                <td>15</td>
+                                <td><span class="badge bg-success">92%</span></td>
+                                <td>R$ 89.300,00</td>
+                                <td><a href="#" class="btn btn-sm btn-outline-primary me-1">Detalhes</a></td>
+                            </tr>
+                            <tr>
+                                <td>Comércio de Informática S/A</td>
+                                <td>98.765.432/0001-00</td>
+                                <td>210</td>
+                                <td>190</td>
+                                <td>20</td>
+                                <td><span class="badge bg-warning">90%</span></td>
+                                <td>R$ 112.500,00</td>
+                                <td><a href="#" class="btn btn-sm btn-outline-primary me-1">Detalhes</a></td>
+                            </tr>
+                            <tr>
+                                <td>Serviços Logísticos LTDA</td>
+                                <td>45.678.901/0001-23</td>
+                                <td>150</td>
+                                <td>130</td>
+                                <td>20</td>
+                                <td><span class="badge bg-danger">87%</span></td>
+                                <td>R$ 78.000,00</td>
+                                <td><a href="#" class="btn btn-sm btn-outline-primary me-1">Detalhes</a></td>
+                            </tr>
+                            <tr>
+                                <td>Indústria Metalúrgica SA</td>
+                                <td>33.444.555/0001-66</td>
+                                <td>170</td>
+                                <td>165</td>
+                                <td>5</td>
+                                <td><span class="badge bg-success">97%</span></td>
+                                <td>R$ 135.000,00</td>
+                                <td><a href="#" class="btn btn-sm btn-outline-primary me-1">Detalhes</a></td>
+                            </tr>
+                            <tr>
+                                <td>Distribuidora Alimentos ME</td>
+                                <td>77.888.999/0001-01</td>
+                                <td>175</td>
+                                <td>150</td>
+                                <td>25</td>
+                                <td><span class="badge bg-danger">86%</span></td>
+                                <td>R$ 67.200,00</td>
+                                <td><a href="#" class="btn btn-sm btn-outline-primary me-1">Detalhes</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico Tipos de Nota -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5>Distribuição por Tipo de Nota</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoTiposNotas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botões -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <a href="{% url 'pre_relatorio' %}" class="btn btn-secondary me-2">
+                <i class="fas fa-arrow-left me-2"></i>Voltar
+            </a>
+            <button class="btn btn-success" onclick="window.print()">
+                <i class="fas fa-print me-2"></i> Imprimir Relatório
+            </button>
+            <button class="btn btn-outline-primary ms-2">
+                <i class="fas fa-file-excel me-2"></i> Exportar Excel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js + Plugin para labels -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<script>
+    // Gráfico de taxa de sucesso por empresa
+    const ctxTaxa = document.getElementById('graficoTaxaSucesso').getContext('2d');
+    new Chart(ctxTaxa, {
+        type: 'bar',
+        data: {
+            labels: ['LTG', 'Informática', 'Logística', 'Metalúrgica', 'Alimentos'],
+            datasets: [{
+                label: 'Taxa de Sucesso (%)',
+                data: [92, 90, 87, 97, 86],
+                backgroundColor: '#007bff'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+
+    // Gráfico de tipos de nota com rótulos visíveis
+    const ctxTipos = document.getElementById('graficoTiposNotas').getContext('2d');
+    new Chart(ctxTipos, {
+        type: 'pie',
+        data: {
+            labels: ['NF-e', 'CT-e', 'MDF-e', 'Outros'],
+            datasets: [{
+                label: 'Distribuição',
+                data: [520, 180, 120, 70],
+                backgroundColor: ['#007bff', '#28a745', '#ffc107', '#6c757d']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                datalabels: {
+                    color: '#fff',
+                    formatter: (value, context) => `${context.chart.data.labels[context.dataIndex]}: ${value}`,
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+</script>
+
+{% endblock %}

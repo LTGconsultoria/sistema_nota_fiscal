@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Análise IA - Progresso{% endblock %}
+{% block content %}
+<div class="d-flex flex-column flex-column-fluid">
+    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+        <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+                    Progresso da Análise</h1>
+                <div class="text-muted">{{ current_path }}</div>
+            </div>
+            <div class="d-flex align-items-center gap-2 gap-lg-3">
+                <a href="{% url 'lista_pdfs_ftp' %}?path={{ current_path }}" class="btn btn-light btn-sm">Voltar</a>
+                <a id="btnDownload"
+                    href="{% url 'analisar_todos_ftp' %}?path={{ current_path }}{% if keys_only %}&keys_only=1{% endif %}"
+                    class="btn btn-primary btn-sm d-none" target="_blank">Baixar TXT</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="kt_app_content" class="app-content flex-column-fluid">
+        <div id="kt_app_content_container" class="app-container container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="fw-semibold">Progresso</div>
+                            <div id="labelPercent" class="text-muted">0%</div>
+                        </div>
+                        <div class="progress">
+                            <div id="bar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div id="statusAtual" class="fw-semibold">Iniciando…</div>
+                    </div>
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Arquivo</th>
+                                <th>Chave</th>
+                                <th>Percentual</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const path = encodeURIComponent("{{ current_path }}");
+        const keysOnly = {{ keys_only| yesno: "true,false"
+    }};
+    const url = `/ftp/stream/?path=${decodeURIComponent(path)}${keysOnly ? '&keys_only=1' : ''}`;
+    const es = new EventSource(url);
+    const bar = document.getElementById('bar');
+    const label = document.getElementById('labelPercent');
+    const tbody = document.getElementById('tbody');
+    const statusAtual = document.getElementById('statusAtual');
+    const btnDownload = document.getElementById('btnDownload');
+
+    es.onmessage = function (e) {
+        try {
+            const data = JSON.parse(e.data);
+            if (data.error) {
+                statusAtual.textContent = `Erro: ${data.error}`;
+                es.close();
+                return;
+            }
+            if (data.empty) {
+                statusAtual.textContent = 'Nenhum PDF encontrado.';
+                es.close();
+                return;
+            }
+            if (data.done) {
+                statusAtual.textContent = 'Finalizado';
+                bar.style.width = '100%';
+                bar.setAttribute('aria-valuenow', '100');
+                label.textContent = '100%';
+                btnDownload.classList.remove('d-none');
+                es.close();
+                return;
+            }
+            const percent = data.percent || 0;
+            bar.style.width = percent + '%';
+            bar.setAttribute('aria-valuenow', percent);
+            label.textContent = percent + '%';
+            statusAtual.textContent = `Processando ${data.indice}/${data.total}: ${data.arquivo}`;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                    <td>${data.arquivo}</td>
+                    <td>${data.chave || ''}</td>
+                    <td>${percent}%</td>
+                    <td>${data.status}</td>
+                `;
+            tbody.appendChild(tr);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    }) ();
+</script>
+{% endblock %}

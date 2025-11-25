@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, Http404, StreamingHttpResponse
 from django.urls import reverse
 from django.contrib import messages
 
 import os
 import io
 import re
+import json
 import ftplib
 from ftplib import FTP, error_perm
 from pdf2image import convert_from_bytes
@@ -457,4 +458,138 @@ def analisar_todos_ftp(request):
     else:
         response['Content-Disposition'] = f'attachment; filename="analise_{nome}.txt"'
     return response
+
+
+@login_required
+def analisar_progresso_view(request):
+    diretorio = request.GET.get('path', '/').strip()
+    keys_only = request.GET.get('keys_only') in ('1', 'true', 'True')
+    return render(request, 'ftp_analise.html', {'current_path': diretorio if diretorio.endswith('/') else diretorio + '/', 'keys_only': keys_only})
+
+
+@login_required
+def analisar_todos_stream(request):
+    diretorio = request.GET.get('path', '/').strip()
+    if not diretorio.endswith('/'):
+        diretorio += '/'
+    keys_only = request.GET.get('keys_only') in ('1', 'true', 'True')
+    host = "6f38071ad3d5.sn.mynetname.net"
+    usuario = "sdr.lucas.marins"
+    senha = "sdr.lucas.marins@ftp"
+
+    def gerar():
+        try:
+            with FTP() as ftp:
+                ftp.connect(host, 9921)
+                ftp.login(usuario, senha)
+                ftp.cwd(diretorio)
+                arquivos = []
+                try:
+                    for name, facts in ftp.mlsd():
+                        if facts.get('type') == 'file' and name.lower().endswith('.pdf'):
+                            arquivos.append(name)
+                except Exception:
+                    for name in ftp.nlst():
+                        if name.lower().endswith('.pdf'):
+                            arquivos.append(name)
+                total = len(arquivos)
+                if total == 0:
+                    yield f"data: {json.dumps({'empty': True})}\n\n"
+                    return
+                for idx, nome in enumerate(arquivos, start=1):
+                    buffer = io.BytesIO()
+                    try:
+                        ftp.retrbinary(f'ReTR {nome}', buffer.write)
+                    except Exception:
+                        ftp.retrbinary(f'RETR {nome}', buffer.write)
+                    buffer.seek(0)
+                    chave = ''
+                    status = 'ok'
+                    try:
+                        imagens = convert_from_bytes(buffer.getvalue(), dpi=200)
+                        texto = ''
+                        for img in imagens[:2]:
+                            w, h = img.size
+                            if w * h > 20000000:
+                                s = (20000000 / (w * h)) ** 0.5
+                                img = img.resize((int(w * s), int(h * s)))
+                            img = ImageOps.autocontrast(img)
+                            img = img.convert('L')
+                            img = img.point(lambda x: 0 if x < 140 else 255, '1')
+                            texto += pytesseract.image_to_string(img, lang='por', config='--psm 6')
+                        dados = extrair_dados_nota(texto)
+                        chave = dados.get('chave_acesso', '')
+                    except Exception as e:
+                        status = 'erro'
+                    percent = int((idx / total) * 100)
+                    payload = {
+                        'arquivo': nome,
+                        'indice': idx,
+                        'total': total,
+                        'percent': percent,
+                        'chave': chave,
+                        'status': status
+                    }
+                    yield f"data: {json.dumps(payload)}\n\n"
+                yield f"data: {json.dumps({'done': True})}\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+
+    resp = StreamingHttpResponse(gerar(), content_type='text/event-stream')
+    resp['Cache-Control'] = 'no-cache'
+    return resp
+
+
+@login_required
+def analisar_progresso_arquivo_view(request):
+    arquivo = request.GET.get('arquivo', '')
+    return render(request, 'ftp_analise_arquivo.html', {'arquivo': arquivo})
+
+
+@login_required
+def analisar_arquivo_stream(request):
+    caminho_arquivo = request.GET.get('arquivo')
+    if not caminho_arquivo:
+        return HttpResponse("Caminho do arquivo não informado.", status=400)
+    host = "6f38071ad3d5.sn.mynetname.net"
+    usuario = "sdr.lucas.marins"
+    senha = "sdr.lucas.marins@ftp"
+
+    def gerar():
+        try:
+            buffer = io.BytesIO()
+            with FTP() as ftp:
+                ftp.connect(host, 9921)
+                ftp.login(usuario, senha)
+                ftp.retrbinary(f'RETR {caminho_arquivo}', buffer.write)
+            yield f"data: {json.dumps({'percent': 10, 'etapa': 'download'})}\n\n"
+            buffer.seek(0)
+            texto = ''
+            try:
+                imagens = convert_from_bytes(buffer.getvalue(), dpi=200)
+                total_imgs = min(2, len(imagens))
+                for idx in range(total_imgs):
+                    img = imagens[idx]
+                    w, h = img.size
+                    if w * h > 20000000:
+                        s = (20000000 / (w * h)) ** 0.5
+                        img = img.resize((int(w * s), int(h * s)))
+                    img = ImageOps.autocontrast(img)
+                    img = img.convert('L')
+                    img = img.point(lambda x: 0 if x < 140 else 255, '1')
+                    texto += pytesseract.image_to_string(img, lang='por', config='--psm 6')
+                    pct = 10 + int(((idx + 1) / total_imgs) * 90)
+                    yield f"data: {json.dumps({'percent': pct, 'etapa': 'ocr'})}\n\n"
+                dados = extrair_dados_nota(texto)
+                chave = dados.get('chave_acesso', '')
+                payload = {'done': True, 'percent': 100, 'arquivo': caminho_arquivo, 'chave': chave}
+                yield f"data: {json.dumps(payload)}\n\n"
+            except Exception as e:
+                yield f"data: {json.dumps({'error': str(e)})}\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+
+    resp = StreamingHttpResponse(gerar(), content_type='text/event-stream')
+    resp['Cache-Control'] = 'no-cache'
+    return resp
 

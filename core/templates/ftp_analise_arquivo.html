@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Análise IA - Arquivo{% endblock %}
+{% block content %}
+<div class="d-flex flex-column flex-column-fluid">
+    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+        <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+            <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Analisando arquivo</h1>
+                <div class="text-muted">{{ arquivo }}</div>
+            </div>
+            <div class="d-flex align-items-center gap-2 gap-lg-3">
+                <a href="{% url 'lista_pdfs_ftp' %}?path={{ arquivo|cut:arquivo|cut:'/' }}" class="btn btn-light btn-sm">Voltar</a>
+                <a id="btnDownload" href="#" class="btn btn-primary btn-sm d-none" download>Baixar TXT</a>
+                <a id="btnDetalhes" href="{% url 'analisar_pdf_ftp' %}?arquivo={{ arquivo }}" class="btn btn-outline-secondary btn-sm d-none" target="_blank">Ver detalhes</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="kt_app_content" class="app-content flex-column-fluid">
+        <div id="kt_app_content_container" class="app-container container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="fw-semibold">Progresso</div>
+                            <div id="labelPercent" class="text-muted">0%</div>
+                        </div>
+                        <div class="progress">
+                            <div id="bar" class="progress-bar" role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div id="statusAtual" class="fw-semibold">Iniciando…</div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="fw-semibold">Chave encontrada</div>
+                        <div id="chave" class="text-muted"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        const arquivo = encodeURIComponent("{{ arquivo }}");
+        const url = `/ftp/stream_arquivo/?arquivo=${decodeURIComponent(arquivo)}`;
+        const es = new EventSource(url);
+        const bar = document.getElementById('bar');
+        const label = document.getElementById('labelPercent');
+        const statusAtual = document.getElementById('statusAtual');
+        const chaveEl = document.getElementById('chave');
+        const btnDownload = document.getElementById('btnDownload');
+        const btnDetalhes = document.getElementById('btnDetalhes');
+
+        es.onmessage = function(e){
+            try {
+                const data = JSON.parse(e.data);
+                if (data.error) {
+                    statusAtual.textContent = `Erro: ${data.error}`;
+                    es.close();
+                    return;
+                }
+                if (data.etapa === 'download') {
+                    statusAtual.textContent = 'Download concluído';
+                }
+                if (data.etapa === 'ocr') {
+                    statusAtual.textContent = 'Processando OCR';
+                }
+                const percent = data.percent || 0;
+                bar.style.width = percent + '%';
+                bar.setAttribute('aria-valuenow', percent);
+                label.textContent = percent + '%';
+                if (data.done) {
+                    statusAtual.textContent = 'Finalizado';
+                    const chave = data.chave || '';
+                    chaveEl.textContent = chave;
+                    if (chave) {
+                        const blob = new Blob([chave + "\n"], {type: 'text/plain'});
+                        const url = URL.createObjectURL(blob);
+                        btnDownload.href = url;
+                        btnDownload.download = 'chave.txt';
+                        btnDownload.classList.remove('d-none');
+                    }
+                    btnDetalhes.classList.remove('d-none');
+                    es.close();
+                }
+            } catch(err) {
+                console.error(err);
+            }
+        };
+    })();
+</script>
+{% endblock %}

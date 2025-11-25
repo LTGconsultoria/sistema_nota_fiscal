@@ -19,6 +19,10 @@ urlpatterns = [
     path('relatorios/erros/<str:data_inicio>/<str:data_fim>/', views.relatorio_erros_view, name='relatorio_erros'),
     path('ftp/analisar_ia/', views.analisar_pdf_ftp, name='analisar_pdf_ftp'),
     path('ftp/analisar_todos/', views.analisar_todos_ftp, name='analisar_todos_ftp'),
+    path('ftp/analisar_progresso/', views.analisar_progresso_view, name='analisar_progresso_view'),
+    path('ftp/stream/', views.analisar_todos_stream, name='analisar_todos_stream'),
+    path('ftp/analisar_progresso_arquivo/', views.analisar_progresso_arquivo_view, name='analisar_progresso_arquivo_view'),
+    path('ftp/stream_arquivo/', views.analisar_arquivo_stream, name='analisar_arquivo_stream'),
 
 
 

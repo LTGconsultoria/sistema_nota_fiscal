@@ -34,7 +34,7 @@
         <div id="kt_app_content_container" class="app-container container-fluid">
 
             {% if error %}
-                <div class="alert alert-danger">{{ error }}</div>
+            <div class="alert alert-danger">{{ error }}</div>
             {% endif %}
 
             <!-- Caminho Atual -->
@@ -65,15 +65,15 @@
                     </div>
                     <div class="card-body d-flex flex-wrap gap-4">
                         {% for directory in directories %}
-                            <div class="text-center">
-                                <a href="?path={{ current_path }}{{ directory }}/" class="text-decoration-none text-reset">
-                                    <i class="fas fa-folder text-warning mb-2" style="font-size: 36px;"></i>
+                        <div class="text-center">
+                            <a href="?path={{ current_path }}{{ directory }}/" class="text-decoration-none text-reset">
+                                <i class="fas fa-folder text-warning mb-2" style="font-size: 36px;"></i>
 
-                                    <div class="fw-semibold">{{ directory }}</div>
-                                </a>
-                            </div>
+                                <div class="fw-semibold">{{ directory }}</div>
+                            </a>
+                        </div>
                         {% empty %}
-                            <p class="text-muted">Sem pastas encontradas.</p>
+                        <p class="text-muted">Sem pastas encontradas.</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -85,7 +85,8 @@
                     <div class="card-header">
                         <h3 class="card-title">Arquivos</h3>
                         <div class="card-toolbar">
-                            <a href="{% url 'analisar_todos_ftp' %}?path={{ current_path }}&keys_only=1" class="btn btn-outline-info btn-sm">
+                            <a href="{% url 'analisar_progresso_view' %}?path={{ current_path }}&keys_only=1"
+                                class="btn btn-outline-info btn-sm">
                                 <i class="fas fa-brain me-1"></i> Analisar IA (todos) e gerar TXT
                             </a>
                         </div>
@@ -104,27 +105,26 @@
                                 <tr>
                                     <td>
                                         {% if file.name|lower|slice:"-4:" == ".pdf" %}
-                                            <i class="fas fa-file-pdf text-danger me-2"></i>
+                                        <i class="fas fa-file-pdf text-danger me-2"></i>
                                         {% else %}
-                                            <i class="fas fa-file text-muted me-2"></i>
+                                        <i class="fas fa-file text-muted me-2"></i>
                                         {% endif %}
                                         {{ file.name }}
                                     </td>
                                     <td>{{ file.modified }}</td>
                                     <td>
                                         <a href="{% url 'abrir_arquivo_ftp' arquivo=current_path|add:file.name %}"
-                                           class="btn btn-sm btn-primary"
-                                           target="_blank">
+                                            class="btn btn-sm btn-primary" target="_blank">
                                             {% if file.name|lower|slice:"-4:" == ".pdf" %}
-                                                Visualizar
+                                            Visualizar
                                             {% else %}
-                                                Baixar
+                                            Baixar
                                             {% endif %}
                                         </a>
-                                        <a href="{% url 'analisar_pdf_ftp' %}?arquivo={{ current_path }}{{ file.name }}"
-   class="btn btn-sm btn-outline-info">
-   <i class="fas fa-brain me-1"></i> Analisar IA
-</a>
+                                        <a href="{% url 'analisar_progresso_arquivo_view' %}?arquivo={{ current_path }}{{ file.name }}"
+                                            class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-brain me-1"></i> Analisar IA
+                                        </a>
 
                                     </td>
                                 </tr>

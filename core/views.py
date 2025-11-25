@@ -11,12 +11,13 @@ import re
 import ftplib
 from ftplib import FTP, error_perm
 from pdf2image import convert_from_bytes
-from PIL import ImageOps
+from PIL import ImageOps, Image
 import pytesseract
 from datetime import datetime
 
 # Configuração global do Tesseract
 os.environ['TESSDATA_PREFIX'] = '/usr/share/tesseract-ocr/5/tessdata'
+Image.MAX_IMAGE_PIXELS = 200000000
 
 # === Autenticação e Dashboard ===
 
@@ -357,10 +358,14 @@ def analisar_pdf_ftp(request):
             ftp.retrbinary(f'RETR {caminho_arquivo}', buffer.write)
 
         buffer.seek(0)
-        imagens = convert_from_bytes(buffer.getvalue(), dpi=300)
+        imagens = convert_from_bytes(buffer.getvalue(), dpi=200)
 
         texto_extraido = ''
         for img in imagens[:2]:
+            w, h = img.size
+            if w * h > 20000000:
+                s = (20000000 / (w * h)) ** 0.5
+                img = img.resize((int(w * s), int(h * s)))
             img = ImageOps.autocontrast(img)
             img = img.convert('L')
             img = img.point(lambda x: 0 if x < 140 else 255, '1')
@@ -410,9 +415,13 @@ def analisar_todos_ftp(request):
                 ftp.retrbinary(f'RETR {nome}', buffer.write)
                 buffer.seek(0)
                 try:
-                    imagens = convert_from_bytes(buffer.getvalue(), dpi=300)
+                    imagens = convert_from_bytes(buffer.getvalue(), dpi=200)
                     texto = ''
                     for img in imagens[:2]:
+                        w, h = img.size
+                        if w * h > 20000000:
+                            s = (20000000 / (w * h)) ** 0.5
+                            img = img.resize((int(w * s), int(h * s)))
                         img = ImageOps.autocontrast(img)
                         img = img.convert('L')
                         img = img.point(lambda x: 0 if x < 140 else 255, '1')

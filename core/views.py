@@ -318,8 +318,17 @@ def extrair_dados_nota(texto):
         chave_match = re.search(r'(\d[\d\s]{40,})', texto)
         if chave_match:
             chave_limpa = re.sub(r'\D', '', chave_match.group())
-            if len(chave_limpa) == 44:
+            if len(chave_limpa) == 44 and validar_chave_acesso(chave_limpa):
                 dados['chave_acesso'] = chave_limpa
+
+    # Busca adicional: varredura de 44 dígitos válidos em todo o texto
+    if 'chave_acesso' not in dados:
+        somente_digitos = re.sub(r'\D', '', texto)
+        for i in range(0, max(0, len(somente_digitos) - 43)):
+            candidato = somente_digitos[i:i+44]
+            if len(candidato) == 44 and validar_chave_acesso(candidato):
+                dados['chave_acesso'] = candidato
+                break
 
     # Valor total (último valor no formato 0.000,00)
     valor_match = re.findall(r'\d{1,3}(?:\.\d{3})*,\d{2}', texto)
@@ -380,6 +389,7 @@ def analisar_todos_ftp(request):
     usuario = "sdr.lucas.marins"
     senha = "sdr.lucas.marins@ftp"
     saida = io.StringIO()
+    keys_only = request.GET.get('keys_only') in ('1', 'true', 'True')
     try:
         with FTP() as ftp:
             ftp.connect(host, 9921)
@@ -409,20 +419,33 @@ def analisar_todos_ftp(request):
                         texto += pytesseract.image_to_string(img, lang='por', config='--psm 6')
                     status = "OK" if "Nota Fiscal" in texto else "Suspeito"
                     dados = extrair_dados_nota(texto)
-                    linha = (
-                        f"arquivo={nome} | status={status}"
-                        f" | cnpj={dados.get('cnpj','')} | data={dados.get('data_emissao','')}"
-                        f" | valor={dados.get('valor_total','')} | chave={dados.get('chave_acesso','')}\n"
-                    )
-                    saida.write(linha)
+                    if keys_only:
+                        chave = dados.get('chave_acesso', '')
+                        if chave:
+                            saida.write(f"{chave}\n")
+                        else:
+                            saida.write("\n")
+                    else:
+                        linha = (
+                            f"arquivo={nome} | status={status}"
+                            f" | cnpj={dados.get('cnpj','')} | data={dados.get('data_emissao','')}"
+                            f" | valor={dados.get('valor_total','')} | chave={dados.get('chave_acesso','')}\n"
+                        )
+                        saida.write(linha)
                 except Exception as e:
-                    saida.write(f"arquivo={nome} | erro={str(e)}\n")
+                    if keys_only:
+                        saida.write("\n")
+                    else:
+                        saida.write(f"arquivo={nome} | erro={str(e)}\n")
     except Exception as e:
         return HttpResponse(f"Erro ao processar pasta: {e}", content_type='text/plain')
 
     conteudo = saida.getvalue()
     nome = diretorio.strip('/').replace('/', '_') or 'raiz'
     response = HttpResponse(conteudo, content_type='text/plain')
-    response['Content-Disposition'] = f'attachment; filename="analise_{nome}.txt"'
+    if keys_only:
+        response['Content-Disposition'] = f'attachment; filename="chaves_{nome}.txt"'
+    else:
+        response['Content-Disposition'] = f'attachment; filename="analise_{nome}.txt"'
     return response
 
